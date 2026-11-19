@@ -629,7 +629,6 @@
         ? `조회 매칭됨 (${escapeHtml_(candidate.upc || "-")})`
         : "조회 미매칭 / 미조회";
 
-      // 1. eBay Browse API 가격 vs UPCitemdb 참고가 구분
       let origPriceLine = `<div class="kv-row"><span class="kv-label">eBay Current Average (eBay Browse API)</span><span class="kv-val">해당 없음 / 미조회</span></div>`;
       if (candidate && candidate.pricing && candidate.pricing.priceSource === "EBAY_BROWSE_API" && candidate.pricing.originalAvgPrice !== null) {
         origPriceLine = `<div class="kv-row"><span class="kv-label">eBay Current Average (eBay Browse API)</span><span class="kv-val">$${Number(candidate.pricing.originalAvgPrice).toFixed(2)}</span></div>`;
@@ -646,7 +645,6 @@
         ? `<div class="kv-row"><span class="kv-label">Agent Suggested Sale Price (${escapeHtml_(meta.price_source)})</span><span class="kv-val">$${Number(fin.suggested_sale_price).toFixed(2)}</span></div>`
         : `<div class="kv-row"><span class="kv-label">Agent Suggested Sale Price</span><span class="kv-val">산출 불가 (가격 기준 없음)</span></div>`;
 
-      // 2. MARKET: eBay 검색 실패와 SOLD 미조회 명확 구분
       const ebayFailed = meta.current_market_available === false;
       let marketBlockHtml = "";
       if (ebayFailed) {
@@ -667,7 +665,6 @@
         marketBlockHtml += `<div class="kv-row"><span class="kv-label">SOLD 데이터</span><span class="kv-val">실제 SOLD 데이터 없음 (미조회/미연동)</span></div>`;
       }
 
-      // 3. FINANCIAL: 계산 불가/실패 시 $0.00 오표기 방지
       let financialBlockHtml = "";
       if (!hasAgentSalePrice) {
         financialBlockHtml = `<div class="warn-box">⚠️ 시장 가격 기준이 없어 예상 판매가·수수료·순이익·ROI·최대 매입가를 산출할 수 없습니다.</div>`;
@@ -682,7 +679,6 @@
         `;
       }
 
-      // 4. AI 분석 실패 여부 구분 및 DECISION
       const aiFailed = meta.vision_engine === "FAILED" || (errors.some(function(e) { return String(e).indexOf("실패") >= 0 || String(e).indexOf("오류") >= 0; }) && !hasAgentSalePrice);
       const decisionResult = dec.result || "PASS";
       let decisionBg = "#ff5d6c";
@@ -739,7 +735,7 @@
 
     async function startUpcScanner() {
       if (typeof Html5Qrcode === "undefined") {
-        setLog("❌ 바코드 스캐너 라이브러리를 불러오지 못했습니다. 페이지를 새로고침해 주세요.");
+        setLog("❌ 바코드 스캐너 라이브러리를 불러오지 못했습니다. (라이브러리 로드 실패/차단)");
         return;
       }
 
@@ -775,8 +771,9 @@
         );
         setLog("✅ 실시간 카메라 실행 중 (UPC_A / UPC_E / EAN_13 / EAN_8 대기)");
       } catch (err) {
+        const detail = err && (err.name || err.message) ? `${err.name ? err.name + ": " : ""}${err.message || err}` : "카메라 접근 거부 또는 오류";
         await stopUpcScanner();
-        setLog("❌ 카메라 실행 실패: " + (err && err.message ? err.message : "브라우저 카메라 권한을 허용해 주세요."));
+        setLog("❌ 카메라 실행 실패: " + detail + "\n사파리 설정/권한 또는 다른 앱의 카메라 점유 여부를 확인해 주세요.");
       }
     }
 
