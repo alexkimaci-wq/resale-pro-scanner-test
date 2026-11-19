@@ -12,30 +12,27 @@
       --sub: #8b9bb4; --buy: #25d695; --maybe: #ffc857; --pass: #ff5d6c;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-    body { background: var(--bg); color: var(--text); padding: 16px; max-width: 520px; margin: 0 auto; }
-    .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; }
-    .title { font-size: 22px; font-weight: 800; color: #fff; }
-    .subtitle { font-size: 12px; color: var(--sub); margin-top: 2px; }
-    .badge { background: rgba(37, 214, 149, 0.12); border: 1px solid rgba(37, 214, 149, 0.4); color: var(--buy); font-size: 11px; padding: 5px 10px; border-radius: 20px; font-weight: 700; }
-    .card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 18px; margin-bottom: 14px; }
-    .label { font-size: 12px; color: var(--sub); margin-bottom: 6px; display: block; font-weight: 600; }
-    .input { width: 100%; background: #081322; border: 1px solid var(--border); color: #fff; padding: 12px 14px; border-radius: 12px; font-size: 15px; outline: none; }
-    .btn-row { display: flex; gap: 8px; margin-top: 12px; }
-    .btn-primary { flex: 1; background: linear-gradient(135deg, #2b98f0, #1565c0); border: none; color: #fff; padding: 13px; border-radius: 12px; font-size: 14px; font-weight: 800; cursor: pointer; }
-    .btn-secondary { background: #162842; border: 1px solid var(--border); color: #fff; padding: 13px 14px; border-radius: 12px; font-size: 13px; font-weight: 700; cursor: pointer; }
+    body { background: var(--bg); color: var(--text); padding: 12px; max-width: 520px; margin: 0 auto; }
 
-    /* 실시간 카메라 + 좌우 확장 중앙 고정 초록색 프레임 */
+    /* 최상단 카메라 스캐너 영역 */
+    .top-scanner-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 12px;
+      margin-bottom: 12px;
+    }
     .scanner-wrapper {
       display: none;
       position: relative;
-      margin-top: 14px;
+      margin-bottom: 12px;
       border-radius: 14px;
       overflow: hidden;
       border: 1px solid var(--border);
       background: #000;
     }
-    #upc-reader { width: 100%; min-height: 280px; }
-    #upc-reader video { width: 100% !important; height: 280px !important; object-fit: cover !important; display: block; }
+    #upc-reader { width: 100%; min-height: 310px; }
+    #upc-reader video { width: 100% !important; height: 310px !important; object-fit: cover !important; display: block; }
     .upc-frame-overlay {
       pointer-events: none;
       position: absolute;
@@ -47,11 +44,11 @@
       z-index: 5;
     }
     .upc-frame-box {
-      width: 92%;
-      height: 96px;
+      width: 96%;
+      height: 145px;
       border: 3px solid #25d695;
-      border-radius: 10px;
-      box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.38), 0 0 14px rgba(37, 214, 149, 0.65);
+      border-radius: 12px;
+      box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.36), 0 0 16px rgba(37, 214, 149, 0.7);
       background: transparent;
     }
     .upc-frame-hint {
@@ -64,6 +61,17 @@
       padding: 4px 10px;
       border-radius: 999px;
     }
+
+    .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+    .title { font-size: 20px; font-weight: 800; color: #fff; }
+    .subtitle { font-size: 11px; color: var(--sub); margin-top: 2px; }
+    .badge { background: rgba(37, 214, 149, 0.12); border: 1px solid rgba(37, 214, 149, 0.4); color: var(--buy); font-size: 11px; padding: 5px 10px; border-radius: 20px; font-weight: 700; }
+    .card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 16px; margin-bottom: 12px; }
+    .label { font-size: 12px; color: var(--sub); margin-bottom: 6px; display: block; font-weight: 600; }
+    .input { width: 100%; background: #081322; border: 1px solid var(--border); color: #fff; padding: 12px 14px; border-radius: 12px; font-size: 15px; outline: none; }
+    .btn-row { display: flex; gap: 8px; }
+    .btn-primary { flex: 1; background: linear-gradient(135deg, #2b98f0, #1565c0); border: none; color: #fff; padding: 13px; border-radius: 12px; font-size: 14px; font-weight: 800; cursor: pointer; }
+    .btn-secondary { background: #162842; border: 1px solid var(--border); color: #fff; padding: 13px 14px; border-radius: 12px; font-size: 13px; font-weight: 700; cursor: pointer; }
     .status-box {
       background: #081322;
       border: 1px solid var(--border);
@@ -89,6 +97,21 @@
   </style>
 </head>
 <body>
+  <div class="top-scanner-card">
+    <div id="scannerWrapper" class="scanner-wrapper">
+      <div id="upc-reader"></div>
+      <div class="upc-frame-overlay">
+        <div class="upc-frame-box"></div>
+        <div class="upc-frame-hint">큰 초록색 프레임 안에 바코드를 맞추세요</div>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button type="button" id="startScanBtn" class="btn-primary" onclick="startUpcScanner()">📷 실시간 UPC 스캔 시작</button>
+      <button type="button" id="stopScanBtn" class="btn-secondary" onclick="stopUpcScanner()">⏹ 카메라 정지</button>
+    </div>
+  </div>
+
   <div class="header">
     <div>
       <div class="title">RESALE PRO SCANNER</div>
@@ -98,29 +121,16 @@
   </div>
 
   <div class="card">
-    <label class="label">GAS Web App Endpoint URL</label>
-    <input type="url" id="gasEndpointUrl" class="input" placeholder="https://script.google.com/macros/s/.../exec" onchange="saveEndpointUrl()">
+    <label class="label">스캔된 UPC 코드</label>
+    <input type="text" id="upcValueInput" class="input" placeholder="스캔된 UPC 코드가 자동 입력됩니다" readonly>
+
+    <div id="scannerLog" class="status-box">대기 중: 아래 GAS 웹앱 URL을 확인한 뒤 [실시간 UPC 스캔 시작]을 눌러주세요.</div>
+    <div id="upcResultCard" class="result-card"></div>
   </div>
 
   <div class="card">
-    <label class="label">UPC / EAN 실시간 스캔 (UPC_A, UPC_E, EAN_13, EAN_8)</label>
-    <input type="text" id="upcValueInput" class="input" placeholder="스캔된 UPC 코드가 자동 입력됩니다" readonly>
-
-    <div class="btn-row">
-      <button type="button" id="startScanBtn" class="btn-primary" onclick="startUpcScanner()">📷 실시간 UPC 스캔 시작</button>
-      <button type="button" id="stopScanBtn" class="btn-secondary" onclick="stopUpcScanner()">⏹ 카메라 정지</button>
-    </div>
-
-    <div id="scannerWrapper" class="scanner-wrapper">
-      <div id="upc-reader"></div>
-      <div class="upc-frame-overlay">
-        <div class="upc-frame-box"></div>
-        <div class="upc-frame-hint">초록색 프레임 안에 바코드를 맞추세요</div>
-      </div>
-    </div>
-
-    <div id="scannerLog" class="status-box">대기 중: GAS 웹앱 URL을 입력한 뒤 [실시간 UPC 스캔 시작]을 눌러주세요.</div>
-    <div id="upcResultCard" class="result-card"></div>
+    <label class="label">GAS Web App Endpoint URL</label>
+    <input type="url" id="gasEndpointUrl" class="input" placeholder="https://script.google.com/macros/s/.../exec" onchange="saveEndpointUrl()">
   </div>
 
   <script>
@@ -235,8 +245,8 @@
         const scanConfig = {
           fps: 15,
           qrbox: function(viewfinderWidth, viewfinderHeight) {
-            const boxWidth = Math.min(440, Math.max(240, Math.floor(viewfinderWidth * 0.90)));
-            const boxHeight = Math.max(85, Math.min(110, Math.floor(viewfinderHeight * 0.34)));
+            const boxWidth = Math.min(480, Math.max(260, Math.floor(viewfinderWidth * 0.94)));
+            const boxHeight = Math.max(120, Math.min(155, Math.floor(viewfinderHeight * 0.46)));
             return { width: boxWidth, height: boxHeight };
           },
           aspectRatio: 1.333333
@@ -297,7 +307,7 @@
     async function triggerAutoUpcLookup(upcCode) {
       const endpointUrl = getGasEndpointUrl();
       if (!endpointUrl) {
-        setLog("❌ GAS Web App Endpoint URL이 설정되지 않았습니다.\n상단 입력칸에 배포된 GAS 웹앱 URL을 입력해 주세요.");
+        setLog("❌ GAS Web App Endpoint URL이 설정되지 않았습니다.\n하단 입력칸에 배포된 GAS 웹앱 URL을 입력해 주세요.");
         return;
       }
 
