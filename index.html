@@ -1,1 +1,352 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>RESALE PRO - UPC Scanner (Stage 3)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+  <style>
+    :root {
+      --bg: #07111f; --card: #0e1c30; --border: #1e3352;
+      --primary: #1e88e5; --accent: #00e5ff; --text: #e6f1ff;
+      --sub: #8b9bb4; --buy: #25d695; --maybe: #ffc857; --pass: #ff5d6c;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    body { background: var(--bg); color: var(--text); padding: 16px; max-width: 520px; margin: 0 auto; }
+    .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; }
+    .title { font-size: 22px; font-weight: 800; color: #fff; }
+    .subtitle { font-size: 12px; color: var(--sub); margin-top: 2px; }
+    .badge { background: rgba(37, 214, 149, 0.12); border: 1px solid rgba(37, 214, 149, 0.4); color: var(--buy); font-size: 11px; padding: 5px 10px; border-radius: 20px; font-weight: 700; }
+    .card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 18px; margin-bottom: 14px; }
+    .label { font-size: 12px; color: var(--sub); margin-bottom: 6px; display: block; font-weight: 600; }
+    .input { width: 100%; background: #081322; border: 1px solid var(--border); color: #fff; padding: 12px 14px; border-radius: 12px; font-size: 15px; outline: none; }
+    .btn-row { display: flex; gap: 8px; margin-top: 12px; }
+    .btn-primary { flex: 1; background: linear-gradient(135deg, #2b98f0, #1565c0); border: none; color: #fff; padding: 13px; border-radius: 12px; font-size: 14px; font-weight: 800; cursor: pointer; }
+    .btn-secondary { background: #162842; border: 1px solid var(--border); color: #fff; padding: 13px 14px; border-radius: 12px; font-size: 13px; font-weight: 700; cursor: pointer; }
 
+    /* 실시간 카메라 + 중앙 초록색 프레임 */
+    .scanner-wrapper {
+      display: none;
+      position: relative;
+      margin-top: 14px;
+      border-radius: 14px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      background: #000;
+    }
+    #upc-reader { width: 100%; min-height: 260px; }
+    .upc-frame-overlay {
+      pointer-events: none;
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0, 0, 0, 0.22);
+      z-index: 5;
+    }
+    .upc-frame-box {
+      width: 78%;
+      height: 110px;
+      border: 3px solid #25d695;
+      border-radius: 10px;
+      box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.35), 0 0 14px rgba(37, 214, 149, 0.65);
+      background: transparent;
+    }
+    .upc-frame-hint {
+      margin-top: 10px;
+      font-size: 12px;
+      font-weight: 700;
+      color: #25d695;
+      background: rgba(7, 17, 31, 0.85);
+      padding: 4px 10px;
+      border-radius: 999px;
+    }
+    .status-box {
+      background: #081322;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px;
+      font-size: 13px;
+      line-height: 1.5;
+      color: var(--sub);
+      margin-top: 12px;
+      white-space: pre-line;
+    }
+    .result-card {
+      display: none;
+      margin-top: 12px;
+      background: #081322;
+      border: 1px solid rgba(0, 229, 255, 0.35);
+      border-radius: 12px;
+      padding: 14px;
+      font-size: 13px;
+    }
+    .result-flex { display: flex; gap: 12px; align-items: center; }
+    .result-thumb { width: 60px; height: 60px; object-fit: contain; background: #fff; border-radius: 8px; padding: 3px; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div>
+      <div class="title">RESALE PRO SCANNER</div>
+      <div class="subtitle">Step 3: GAS Backend UPC Verification</div>
+    </div>
+    <div class="badge">● STAGE 3 READY</div>
+  </div>
+
+  <div class="card">
+    <label class="label">GAS Web App Endpoint URL</label>
+    <input type="url" id="gasEndpointUrl" class="input" placeholder="https://script.google.com/macros/s/.../exec" onchange="saveEndpointUrl()">
+  </div>
+
+  <div class="card">
+    <label class="label">UPC / EAN 실시간 스캔 (UPC_A, UPC_E, EAN_13, EAN_8)</label>
+    <input type="text" id="upcValueInput" class="input" placeholder="스캔된 UPC 코드가 자동 입력됩니다" readonly>
+
+    <div class="btn-row">
+      <button type="button" id="startScanBtn" class="btn-primary" onclick="startUpcScanner()">📷 실시간 UPC 스캔 시작</button>
+      <button type="button" id="stopScanBtn" class="btn-secondary" onclick="stopUpcScanner()">⏹ 카메라 정지</button>
+    </div>
+
+    <div id="scannerWrapper" class="scanner-wrapper">
+      <div id="upc-reader"></div>
+      <div class="upc-frame-overlay">
+        <div class="upc-frame-box"></div>
+        <div class="upc-frame-hint">초록색 프레임 안에 바코드를 맞추세요</div>
+      </div>
+    </div>
+
+    <div id="scannerLog" class="status-box">대기 중: GAS 웹앱 URL을 입력한 뒤 [실시간 UPC 스캔 시작]을 눌러주세요.</div>
+    <div id="upcResultCard" class="result-card"></div>
+  </div>
+
+  <script>
+    const DEFAULT_GAS_ENDPOINT_URL = "";
+    const STORAGE_KEY_URL = "RESALE_PRO_GAS_URL";
+
+    let upcScannerInstance = null;
+    let isScanLocked = false;
+    let lastScannedUpc = "";
+    let cooldownTimer = null;
+
+    (function initEndpoint() {
+      const saved = localStorage.getItem(STORAGE_KEY_URL) || DEFAULT_GAS_ENDPOINT_URL;
+      if (saved) {
+        document.getElementById("gasEndpointUrl").value = saved;
+      }
+    })();
+
+    function saveEndpointUrl() {
+      const url = document.getElementById("gasEndpointUrl").value.trim();
+      if (url) {
+        localStorage.setItem(STORAGE_KEY_URL, url);
+      } else {
+        localStorage.removeItem(STORAGE_KEY_URL);
+      }
+    }
+
+    function getGasEndpointUrl() {
+      const inputVal = document.getElementById("gasEndpointUrl").value.trim();
+      if (inputVal) {
+        localStorage.setItem(STORAGE_KEY_URL, inputVal);
+        return inputVal;
+      }
+      return DEFAULT_GAS_ENDPOINT_URL.trim();
+    }
+
+    function setLog(msg) {
+      document.getElementById("scannerLog").textContent = msg;
+    }
+
+    function hideResultCard() {
+      const card = document.getElementById("upcResultCard");
+      card.style.display = "none";
+      card.innerHTML = "";
+    }
+
+    function renderUpcResult(code, product) {
+      const card = document.getElementById("upcResultCard");
+      card.style.display = "block";
+
+      if (product && product.isUrl) {
+        card.innerHTML = `
+          <div style="color:var(--buy); font-weight:700; margin-bottom:4px;">🔗 URL 인식됨</div>
+          <a href="${product.url}" target="_blank" rel="noopener noreferrer" style="color:var(--accent); word-break:break-all;">${product.url}</a>
+        `;
+        return;
+      }
+
+      if (product && product.found) {
+        const thumbHtml = product.image ? `<img src="${product.image}" class="result-thumb" alt="product">` : "";
+        const priceText = product.avgPrice && Number(product.avgPrice) > 0
+          ? ` | 참고가: $${Number(product.avgPrice).toFixed(2)}`
+          : "";
+        card.innerHTML = `
+          <div class="result-flex">
+            ${thumbHtml}
+            <div>
+              <div style="color:var(--buy); font-weight:800; font-size:12px;">✅ UPC 조회 성공 (${code})</div>
+              <div style="color:#fff; font-weight:700; margin-top:2px;">${product.title || "상품명 없음"}</div>
+              <div style="color:var(--sub); font-size:12px; margin-top:3px;">브랜드: ${product.brand || "Unknown"}${priceText}</div>
+            </div>
+          </div>
+        `;
+      } else {
+        card.innerHTML = `
+          <div style="color:var(--maybe); font-weight:800;">ℹ️ UPC (${code}) 조회 결과 없음</div>
+          <div style="color:var(--sub); font-size:12px; margin-top:4px;">연동된 상품 DB에서 일치하는 항목을 찾지 못했습니다.</div>
+        `;
+      }
+    }
+
+    function getSupportedUpcFormats() {
+      if (typeof Html5QrcodeSupportedFormats === "undefined") return undefined;
+      return [
+        Html5QrcodeSupportedFormats.UPC_A,
+        Html5QrcodeSupportedFormats.UPC_E,
+        Html5QrcodeSupportedFormats.EAN_13,
+        Html5QrcodeSupportedFormats.EAN_8
+      ];
+    }
+
+    async function startUpcScanner() {
+      if (typeof Html5Qrcode === "undefined") {
+        setLog("❌ 바코드 스캐너 라이브러리를 불러오지 못했습니다. 페이지를 새로고침해 주세요.");
+        return;
+      }
+
+      await stopUpcScanner();
+
+      isScanLocked = false;
+      hideResultCard();
+      document.getElementById("scannerWrapper").style.display = "block";
+      setLog("⏳ 카메라 권한 확인 및 실시간 스캐너 실행 중...");
+
+      const formats = getSupportedUpcFormats();
+      const configObj = formats
+        ? { formatsToSupport: formats, experimentalFeatures: { useBarCodeDetectorIfSupported: true } }
+        : { experimentalFeatures: { useBarCodeDetectorIfSupported: true } };
+
+      try {
+        upcScannerInstance = new Html5Qrcode("upc-reader", configObj);
+        const scanConfig = {
+          fps: 15,
+          qrbox: function(viewfinderWidth, viewfinderHeight) {
+            const boxWidth = Math.max(200, Math.floor(viewfinderWidth * 0.78));
+            const boxHeight = Math.max(85, Math.floor(viewfinderHeight * 0.38));
+            return { width: boxWidth, height: boxHeight };
+          },
+          aspectRatio: 1.333333
+        };
+
+        await upcScannerInstance.start(
+          { facingMode: "environment" },
+          scanConfig,
+          onUpcDecoded,
+          function() {}
+        );
+        setLog("✅ 실시간 카메라 실행 중 (UPC_A / UPC_E / EAN_13 / EAN_8 대기)");
+      } catch (err) {
+        await stopUpcScanner();
+        setLog("❌ 카메라 실행 실패: " + (err && err.message ? err.message : "브라우저 카메라 권한을 허용해 주세요."));
+      }
+    }
+
+    async function stopUpcScanner() {
+      const wrapper = document.getElementById("scannerWrapper");
+      if (wrapper) wrapper.style.display = "none";
+
+      if (upcScannerInstance) {
+        const ref = upcScannerInstance;
+        upcScannerInstance = null;
+        try {
+          await ref.stop();
+        } catch (e) {}
+        try {
+          await ref.clear();
+        } catch (e) {}
+      }
+    }
+
+    async function onUpcDecoded(decodedText) {
+      const cleaned = String(decodedText || "").replace(/[^0-9]/g, "").trim();
+      if (!cleaned) return;
+
+      if (isScanLocked) return;
+      if (cleaned === lastScannedUpc) return;
+
+      isScanLocked = true;
+      lastScannedUpc = cleaned;
+
+      document.getElementById("upcValueInput").value = cleaned;
+      setLog("🎯 UPC 인식 완료: " + cleaned + "\n⏹ 카메라 자동 정지 중...");
+
+      await stopUpcScanner();
+      await triggerAutoUpcLookup(cleaned);
+
+      if (cooldownTimer) clearTimeout(cooldownTimer);
+      cooldownTimer = setTimeout(function() {
+        lastScannedUpc = "";
+        isScanLocked = false;
+      }, 2500);
+    }
+
+    async function triggerAutoUpcLookup(upcCode) {
+      const endpointUrl = getGasEndpointUrl();
+      if (!endpointUrl) {
+        setLog("❌ GAS Web App Endpoint URL이 설정되지 않았습니다.\n상단 입력칸에 배포된 GAS 웹앱 URL을 입력해 주세요.");
+        return;
+      }
+
+      if (!/^https:\/\/script\.google\.com\/macros\/s\/.+\/exec$/i.test(endpointUrl)) {
+        setLog("❌ 올바른 GAS 웹앱 URL 형식이 아닙니다. (https://script.google.com/macros/s/.../exec 확인)");
+        return;
+      }
+
+      setLog("⏳ GAS 백엔드로 UPC(" + upcCode + ") 조회 요청 중...");
+
+      try {
+        const response = await fetch(endpointUrl, {
+          method: "POST",
+          headers: {
+            "Content-Type": "text/plain;charset=utf-8"
+          },
+          body: JSON.stringify({
+            action: "lookupBarcode",
+            code: upcCode
+          })
+        });
+
+        if (!response.ok) {
+          throw new Error("HTTP 상태 오류 (" + response.status + ") — GAS 웹앱 액세스 권한(모든 사용자)을 확인해 주세요.");
+        }
+
+        const rawText = await response.text();
+        let data = null;
+        try {
+          data = JSON.parse(rawText);
+        } catch (parseErr) {
+          throw new Error("GAS 응답이 JSON 형식이 아닙니다. 웹앱 배포 버전 및 공유 권한을 확인해 주세요.");
+        }
+
+        if (!data || !data.success) {
+          throw new Error(data && data.error ? data.error : "UPC 조회에 실패했습니다.");
+        }
+
+        setLog("✅ GAS 백엔드 조회 완료 (UPC: " + upcCode + ")");
+        renderUpcResult(upcCode, data.product);
+      } catch (err) {
+        hideResultCard();
+        const errMsg = err && err.message ? err.message : String(err);
+        if (errMsg.indexOf("Failed to fetch") >= 0 || errMsg.indexOf("NetworkError") >= 0) {
+          setLog("❌ 네트워크/CORS 또는 GAS 권한 오류: GAS 배포 설정에서 '액세스 권한: 모든 사용자'로 되어 있는지 확인해 주세요.");
+        } else {
+          setLog("❌ 조회 오류: " + errMsg);
+        }
+      }
+    }
+  </script>
+</body>
+</html>
