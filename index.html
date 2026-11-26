@@ -1,9 +1,23 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <title>Resellpro - Smarter Sourcing. Greater Profits.</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+
+  <!-- PWA 전체 화면(App) 모드 활성화 -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Resellpro">
+  <meta name="theme-color" content="#06080D">
+
+  <!-- 아이폰/안드로이드 홈 화면 전용 골드 아이콘 -->
+  <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/alexkimaci-wq/resale-pro-scanner-test/main/icon.png">
+  <link rel="apple-touch-icon" href="https://raw.githubusercontent.com/alexkimaci-wq/resale-pro-scanner-test/main/icon.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="https://raw.githubusercontent.com/alexkimaci-wq/resale-pro-scanner-test/main/icon.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="https://raw.githubusercontent.com/alexkimaci-wq/resale-pro-scanner-test/main/icon.png">
+
   <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
   <style>
     :root {
@@ -33,7 +47,7 @@
     body {
       background: radial-gradient(circle at top center, #141926 0%, #06080D 52%);
       color: var(--text-primary);
-      padding: 14px 16px 36px;
+      padding: calc(14px + env(safe-area-inset-top)) 16px calc(36px + env(safe-area-inset-bottom));
       max-width: 520px;
       margin: 0 auto;
       min-height: 100vh;
@@ -47,11 +61,19 @@
       justify-content: space-between;
       align-items: center;
       padding: 4px 2px 14px;
+      gap: 8px;
     }
     .brand-left {
       display: flex;
       align-items: center;
       gap: 10px;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+      transition: opacity 0.15s ease;
+    }
+    .brand-left:active {
+      opacity: 0.65;
     }
     .brand-mark {
       width: 36px;
@@ -81,19 +103,24 @@
       margin-top: 2px;
       letter-spacing: 0.3px;
     }
-    .brand-pill {
-      background: var(--accent-gold-soft);
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .lang-toggle {
+      background: var(--bg-elevated);
       border: 1px solid var(--border-gold);
       color: var(--accent-gold-bright);
-      font-size: 10px;
+      font-size: 11px;
       font-weight: 800;
-      letter-spacing: 0.7px;
-      padding: 5px 10px;
+      padding: 6px 10px;
       border-radius: 999px;
-      text-transform: uppercase;
+      cursor: pointer;
+      letter-spacing: 0.5px;
     }
 
-    /* 3대 핵심 진입 허브 (Take a Photo + UPC + Storage) */
+    /* 3대 핵심 진입 허브 */
     .hub-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -125,30 +152,11 @@
       border-color: var(--accent-gold-bright);
       box-shadow: 0 0 0 1px var(--accent-gold), 0 8px 22px rgba(212, 175, 55, 0.18);
     }
-    .hub-icon {
-      font-size: 22px;
-      margin-bottom: 6px;
-      display: block;
-    }
-    .hub-card.hero-photo .hub-icon {
-      font-size: 28px;
-      margin-bottom: 0;
-    }
-    .hub-title {
-      font-size: 14px;
-      font-weight: 800;
-      color: var(--text-primary);
-    }
-    .hub-card.hero-photo .hub-title {
-      font-size: 16px;
-      color: var(--accent-gold-bright);
-    }
-    .hub-sub {
-      font-size: 11px;
-      color: var(--text-secondary);
-      margin-top: 3px;
-      line-height: 1.35;
-    }
+    .hub-icon { font-size: 22px; margin-bottom: 6px; display: block; }
+    .hub-card.hero-photo .hub-icon { font-size: 28px; margin-bottom: 0; }
+    .hub-title { font-size: 14px; font-weight: 800; color: var(--text-primary); }
+    .hub-card.hero-photo .hub-title { font-size: 16px; color: var(--accent-gold-bright); }
+    .hub-sub { font-size: 11px; color: var(--text-secondary); margin-top: 3px; line-height: 1.35; }
     .hub-arrow {
       width: 28px;
       height: 28px;
@@ -163,7 +171,6 @@
       flex-shrink: 0;
     }
 
-    /* 모드 패널 */
     .mode-panel { display: none; }
     .mode-panel.active { display: block; }
 
@@ -306,7 +313,7 @@
       border-radius: 999px;
     }
 
-    /* 사진 업로드/미리보기 영역 */
+    /* 사진 업로드 영역 */
     .photo-dropzone {
       border: 1.5px dashed var(--border-gold);
       background: radial-gradient(circle at center, rgba(212,175,55,0.08), rgba(6,8,13,0.9));
@@ -402,7 +409,7 @@
       color: var(--accent-gold-bright);
     }
 
-    /* 시안 스타일 Recommended Max Buy Price 배너 */
+    /* 판정 배너 */
     .max-buy-banner {
       border-radius: 14px;
       padding: 14px 16px;
@@ -424,19 +431,8 @@
       background: linear-gradient(135deg, rgba(239, 68, 68, 0.22), rgba(127, 29, 29, 0.5));
       border: 1px solid rgba(239, 68, 68, 0.6);
     }
-    .banner-kicker {
-      font-size: 11px;
-      font-weight: 700;
-      color: var(--text-primary);
-      opacity: 0.9;
-    }
-    .banner-price {
-      font-size: 30px;
-      font-weight: 900;
-      color: #fff;
-      line-height: 1.1;
-      margin-top: 2px;
-    }
+    .banner-kicker { font-size: 11px; font-weight: 700; color: var(--text-primary); opacity: 0.9; }
+    .banner-price { font-size: 30px; font-weight: 900; color: #fff; line-height: 1.1; margin-top: 2px; }
     .banner-decision-pill {
       padding: 8px 14px;
       border-radius: 10px;
@@ -446,13 +442,8 @@
       font-size: 16px;
       min-width: 96px;
     }
-    .banner-roi {
-      font-size: 11px;
-      font-weight: 800;
-      margin-top: 2px;
-    }
+    .banner-roi { font-size: 11px; font-weight: 800; margin-top: 2px; }
 
-    /* 신뢰도 프로그레스 바 */
     .conf-bar-wrap {
       width: 100%;
       height: 6px;
@@ -467,7 +458,6 @@
       border-radius: 999px;
     }
 
-    /* 마켓 시세 골드 카드 */
     .market-gold-card {
       background: linear-gradient(160deg, rgba(212,175,55,0.1), rgba(13,19,30,0.95));
       border: 1px solid var(--border-gold);
@@ -475,12 +465,7 @@
       padding: 13px 14px;
       margin-top: 10px;
     }
-    .market-big-price {
-      font-size: 26px;
-      font-weight: 900;
-      color: var(--accent-gold-bright);
-      margin-top: 3px;
-    }
+    .market-big-price { font-size: 26px; font-weight: 900; color: var(--accent-gold-bright); margin-top: 3px; }
 
     .eval-section-title {
       font-size: 11px;
@@ -559,16 +544,18 @@
   </style>
 </head>
 <body>
-  <!-- 상단 RESELLPRO 브랜드 헤더 -->
+  <!-- 상단 RESELLPRO 브랜드 헤더 (터치 시 새로고침) -->
   <div class="brand-header">
-    <div class="brand-left">
+    <div class="brand-left" onclick="refreshApp()" title="Tap to Refresh">
       <div class="brand-mark">↗</div>
       <div>
         <div class="brand-wordmark">RESELL<span>PRO</span></div>
         <div class="brand-tagline">Smarter Sourcing. Greater Profits.</div>
       </div>
     </div>
-    <div class="brand-pill">PRO AI</div>
+    <div class="header-right">
+      <button type="button" id="langToggleBtn" class="lang-toggle" onclick="toggleLanguage()">🌐 EN / KR</button>
+    </div>
   </div>
 
   <!-- 3대 핵심 진입 허브 -->
@@ -577,8 +564,8 @@
       <div style="display:flex; align-items:center; gap:12px;">
         <span class="hub-icon">📷</span>
         <div>
-          <div class="hub-title">Take a Photo · AI Scan</div>
-          <div class="hub-sub">사진 한 장으로 상품 식별 · 시세 · 최대 매입가 분석</div>
+          <div class="hub-title" data-i18n="hubPhotoTitle">Take a Photo · AI Scan</div>
+          <div class="hub-sub" data-i18n="hubPhotoSub">Identify items, market price & max buy price from one photo</div>
         </div>
       </div>
       <div class="hub-arrow">›</div>
@@ -586,20 +573,18 @@
 
     <button type="button" id="hubUpcBtn" class="hub-card" onclick="switchMode('upc')">
       <span class="hub-icon">║▌</span>
-      <div class="hub-title">Scan UPC Barcode</div>
-      <div class="hub-sub">실시간 바코드 1초 조회 · AI 평가</div>
+      <div class="hub-title" data-i18n="hubUpcTitle">Scan UPC Barcode</div>
+      <div class="hub-sub" data-i18n="hubUpcSub">Instant barcode lookup & AI profit check</div>
     </button>
 
     <button type="button" id="hubStorageBtn" class="hub-card" onclick="switchMode('storage')">
       <span class="hub-icon">📦</span>
-      <div class="hub-title">Storage Auction</div>
-      <div class="hub-sub">유닛 다중 사진 · 안전 입찰가 계산</div>
+      <div class="hub-title" data-i18n="hubStorageTitle">Storage Auction</div>
+      <div class="hub-sub" data-i18n="hubStorageSub">Multi-photo unit valuation & safe max bid</div>
     </button>
   </div>
 
-  <!-- ========================================================= -->
-  <!-- MODE 1: TAKE A PHOTO (AI PHOTO SCAN) -->
-  <!-- ========================================================= -->
+  <!-- MODE 1: TAKE A PHOTO -->
   <div id="panel-photo" class="mode-panel active">
     <div class="card gold-edge">
       <div class="section-kicker">
@@ -611,28 +596,26 @@
 
       <div class="photo-dropzone" onclick="document.getElementById('photoFileInput').click()">
         <div style="font-size:28px; margin-bottom:6px;">📸</div>
-        <div style="font-weight:800; font-size:14px; color:var(--accent-gold-bright);">상품 사진 촬영 또는 앨범 선택</div>
-        <div class="edit-note">바코드가 없는 의류·신발·빈티지·잡화도 AI가 즉시 분석합니다</div>
+        <div style="font-weight:800; font-size:14px; color:var(--accent-gold-bright);" data-i18n="photoDropTitle">Take a Photo or Choose from Library</div>
+        <div class="edit-note" data-i18n="photoDropSub">Works for clothing, shoes, vintage & items without barcodes</div>
       </div>
       <input type="file" id="photoFileInput" accept="image/*" capture="environment" style="display:none" onchange="onPhotoSelected(this)">
 
       <div style="margin-top:12px;">
-        <label class="label">Asking Price ($ 매입가, 선택 또는 실제 매입가 입력)</label>
-        <input type="number" id="photoAskingInput" class="input tabular" step="0.01" min="0" inputmode="decimal" placeholder="예: 12.00">
+        <label class="label" data-i18n="photoAskLabel">Asking Price ($ Optional or actual cost)</label>
+        <input type="number" id="photoAskingInput" class="input tabular" step="0.01" min="0" inputmode="decimal" placeholder="e.g. 12.00">
       </div>
 
       <div class="btn-row" style="margin-top:12px;">
-        <button type="button" id="runPhotoBtn" class="btn-gold" onclick="runPhotoAnalysis()">✨ AI 사진 분석 실행</button>
+        <button type="button" id="runPhotoBtn" class="btn-gold" onclick="runPhotoAnalysis()" data-i18n="runPhotoBtn">✨ Analyze Photo with AI</button>
       </div>
 
-      <div id="photoStatusBox" class="status-box">대기 중: 상품 사진을 촬영하거나 선택한 뒤 [AI 사진 분석 실행]을 누르세요.</div>
+      <div id="photoStatusBox" class="status-box" data-i18n="photoReady">Ready: Take or select an item photo, then tap [Analyze Photo with AI].</div>
       <div id="photoResultCard" class="result-card"></div>
     </div>
   </div>
 
-  <!-- ========================================================= -->
-  <!-- MODE 2: SCAN UPC BARCODE (4-1 + 4-2 + 4-3 시트 저장) -->
-  <!-- ========================================================= -->
+  <!-- MODE 2: SCAN UPC BARCODE -->
   <div id="panel-upc" class="mode-panel">
     <div class="card gold-edge">
       <div class="section-kicker"><span>01 · Real-Time UPC Scanner</span></div>
@@ -641,30 +624,30 @@
         <div id="upc-reader"></div>
         <div class="upc-frame-overlay">
           <div class="upc-frame-box"></div>
-          <div class="upc-frame-hint">골드 프레임 안에 UPC 바코드를 맞추세요</div>
+          <div class="upc-frame-hint" data-i18n="upcFrameHint">Align UPC barcode inside the gold frame</div>
         </div>
       </div>
 
       <div class="btn-row">
-        <button type="button" id="startScanBtn" class="btn-gold" onclick="startUpcScanner()">📷 실시간 UPC 스캔 시작</button>
-        <button type="button" id="stopScanBtn" class="btn-secondary" onclick="stopUpcScanner()">정지</button>
+        <button type="button" id="startScanBtn" class="btn-gold" onclick="startUpcScanner()" data-i18n="startScanBtn">📷 Start Live UPC Scan</button>
+        <button type="button" id="stopScanBtn" class="btn-secondary" onclick="stopUpcScanner()" data-i18n="stopScanBtn">Stop</button>
       </div>
 
       <div style="margin-top:12px;">
-        <label class="label">스캔된 UPC / GTIN 코드</label>
-        <input type="text" id="upcValueInput" class="input tabular" placeholder="스캔 시 바코드 번호가 자동 입력됩니다" readonly>
+        <label class="label" data-i18n="upcCodeLabel">Scanned UPC / GTIN Code</label>
+        <input type="text" id="upcValueInput" class="input tabular" placeholder="Barcode will auto-fill here" readonly>
       </div>
 
-      <div id="scannerLog" class="status-box">대기 중: [실시간 UPC 스캔 시작]을 눌러 바코드를 인식하세요.</div>
+      <div id="scannerLog" class="status-box" data-i18n="upcReady">Ready: Tap [Start Live UPC Scan] to scan a product barcode.</div>
       <div id="upcResultCard" class="result-card"></div>
     </div>
 
     <div class="card">
       <div class="section-kicker"><span>02 · Profit Intelligence</span></div>
-      <div class="edit-note" style="margin-top:0; margin-bottom:10px;">상품 상태를 선택하고 실제 매입가(Asking Price)를 입력해 매입 적합성을 판단하세요.</div>
+      <div class="edit-note" style="margin-top:0; margin-bottom:10px;" data-i18n="evalIntro">Select item condition and enter asking price ($) to get BUY / MAYBE / PASS verdict.</div>
 
       <div>
-        <label class="label">PRODUCT CONDITION (필수 선택)</label>
+        <label class="label" data-i18n="condLabel">PRODUCT CONDITION (Required)</label>
         <div id="conditionChips" class="cond-group">
           <button type="button" class="cond-chip" data-cond="New" onclick="selectProductCondition('New')">New</button>
           <button type="button" class="cond-chip" data-cond="Like New" onclick="selectProductCondition('Like New')">Like New</button>
@@ -675,22 +658,20 @@
       </div>
 
       <div style="margin-top:12px;">
-        <label class="label">Asking Price ($ 매입가, 0보다 큰 금액 필수)</label>
-        <input type="number" id="askingPriceInput" class="input tabular" step="0.01" min="0.01" inputmode="decimal" placeholder="예: 15.00">
+        <label class="label" data-i18n="evalAskLabel">Asking Price ($ Required, > 0)</label>
+        <input type="number" id="askingPriceInput" class="input tabular" step="0.01" min="0.01" inputmode="decimal" placeholder="e.g. 15.00">
       </div>
 
       <div class="btn-row" style="margin-top:12px;">
-        <button type="button" id="runEvalBtn" class="btn-gold" onclick="runAiEvaluationFromUpc()">Analyze Profit & Decision</button>
+        <button type="button" id="runEvalBtn" class="btn-gold" onclick="runAiEvaluationFromUpc()" data-i18n="runEvalBtn">Analyze Profit & Decision</button>
       </div>
 
-      <div id="evalStatusBox" class="status-box">분석 대기 중: UPC 조회 및 상품 정보 확인 후 상태와 매입가($)를 입력해 주세요.</div>
+      <div id="evalStatusBox" class="status-box" data-i18n="evalReady">Waiting: Scan UPC, select condition & enter asking price ($).</div>
       <div id="evalResultCard" class="result-card"></div>
     </div>
   </div>
 
-  <!-- ========================================================= -->
-  <!-- MODE 3: STORAGE AUCTION ANALYZER -->
-  <!-- ========================================================= -->
+  <!-- MODE 3: STORAGE AUCTION -->
   <div id="panel-storage" class="mode-panel">
     <div class="card gold-edge">
       <div class="section-kicker">
@@ -700,29 +681,29 @@
 
       <div class="photo-dropzone" onclick="document.getElementById('storageFilesInput').click()">
         <div style="font-size:28px; margin-bottom:6px;">📦</div>
-        <div style="font-weight:800; font-size:14px; color:var(--accent-gold-bright);">스토리지 유닛 사진 선택 (최대 5장)</div>
-        <div class="edit-note">품목별 eBay 시세 · 수수료 · 폐기비 · 세금을 반영해 MAX BID를 계산합니다</div>
+        <div style="font-weight:800; font-size:14px; color:var(--accent-gold-bright);" data-i18n="storageDropTitle">Select Storage Unit Photos (Up to 5)</div>
+        <div class="edit-note" data-i18n="storageDropSub">Calculates safe MAX BID factoring eBay comps, fees, disposal & tax</div>
       </div>
       <input type="file" id="storageFilesInput" accept="image/*" multiple style="display:none" onchange="onStoragePhotosSelected(this)">
       <div id="storageThumbs" class="storage-thumbs"></div>
 
       <div style="margin-top:12px;">
-        <label class="label">Current Bid ($ 현재 경매가, 선택 입력)</label>
-        <input type="number" id="storageBidInput" class="input tabular" step="1" min="0" inputmode="decimal" placeholder="예: 250">
+        <label class="label" data-i18n="storageBidLabel">Current Bid ($ Optional)</label>
+        <input type="number" id="storageBidInput" class="input tabular" step="1" min="0" inputmode="decimal" placeholder="e.g. 250">
       </div>
 
       <div class="btn-row" style="margin-top:12px;">
-        <button type="button" id="runStorageBtn" class="btn-gold" onclick="runStorageAnalysis()">Analyze Unit & Calculate MAX BID</button>
+        <button type="button" id="runStorageBtn" class="btn-gold" onclick="runStorageAnalysis()" data-i18n="runStorageBtn">Analyze Unit & Calculate MAX BID</button>
       </div>
 
-      <div id="storageStatusBox" class="status-box">대기 중: 스토리지 사진을 1~5장 선택한 뒤 분석을 실행하세요.</div>
+      <div id="storageStatusBox" class="status-box" data-i18n="storageReady">Ready: Select 1–5 storage unit photos and tap Analyze.</div>
       <div id="storageResultCard" class="result-card"></div>
     </div>
   </div>
 
   <!-- 백엔드 연결 설정 (접이식) -->
   <details class="settings-drawer">
-    <summary>⚙️ Resellpro Backend Endpoint 설정</summary>
+    <summary data-i18n="settingsSummary">⚙️ Resellpro Backend Endpoint Settings</summary>
     <div style="margin-top:10px;">
       <label class="label">GAS Web App Endpoint URL</label>
       <input type="url" id="gasEndpointUrl" class="input" placeholder="https://script.google.com/macros/s/.../exec" onchange="saveEndpointUrl()">
@@ -733,7 +714,136 @@
     const DEFAULT_GAS_ENDPOINT_URL = "https://script.google.com/macros/s/AKfycbyWGjgPttN5jGM2xfGkTZy6gYZs77_Dq_taJ2ur1-ySqv7xtmu5DwWCFeLTklKdWF4A/exec";
     const STORAGE_KEY_URL = "RESELLPRO_GAS_URL";
     const LEGACY_STORAGE_KEY_URL = "RESALE_PRO_GAS_URL";
+    const STORAGE_KEY_LANG = "RESELLPRO_LANG";
 
+    // ==========================================
+    // 상단 RESELLPRO 로고 터치 시 새로고침
+    // ==========================================
+    async function refreshApp() {
+      try {
+        await stopUpcScanner();
+      } catch (e) {}
+      window.location.reload();
+    }
+
+    // ==========================================
+    // 다국어 사전 (EN / KO)
+    // ==========================================
+    const I18N = {
+      en: {
+        hubPhotoTitle: "Take a Photo · AI Scan",
+        hubPhotoSub: "Identify items, market price & max buy price from one photo",
+        hubUpcTitle: "Scan UPC Barcode",
+        hubUpcSub: "Instant barcode lookup & AI profit check",
+        hubStorageTitle: "Storage Auction",
+        hubStorageSub: "Multi-photo unit valuation & safe max bid",
+        photoDropTitle: "Take a Photo or Choose from Library",
+        photoDropSub: "Works for clothing, shoes, vintage & items without barcodes",
+        photoAskLabel: "Asking Price ($ Optional or actual cost)",
+        runPhotoBtn: "✨ Analyze Photo with AI",
+        photoReady: "Ready: Take or select an item photo, then tap [Analyze Photo with AI].",
+        upcFrameHint: "Align UPC barcode inside the gold frame",
+        startScanBtn: "📷 Start Live UPC Scan",
+        stopScanBtn: "Stop",
+        upcCodeLabel: "Scanned UPC / GTIN Code",
+        upcReady: "Ready: Tap [Start Live UPC Scan] to scan a product barcode.",
+        evalIntro: "Select item condition and enter asking price ($) to get BUY / MAYBE / PASS verdict.",
+        condLabel: "PRODUCT CONDITION (Required)",
+        evalAskLabel: "Asking Price ($ Required, > 0)",
+        runEvalBtn: "Analyze Profit & Decision",
+        evalReady: "Waiting: Scan UPC, select condition & enter asking price ($).",
+        storageDropTitle: "Select Storage Unit Photos (Up to 5)",
+        storageDropSub: "Calculates safe MAX BID factoring eBay comps, fees, disposal & tax",
+        storageBidLabel: "Current Bid ($ Optional)",
+        runStorageBtn: "Analyze Unit & Calculate MAX BID",
+        storageReady: "Ready: Select 1–5 storage unit photos and tap Analyze.",
+        settingsSummary: "⚙️ Resellpro Backend Endpoint Settings",
+        saveSheetBtn: "💾 Save to Google Sheets",
+        savingSheet: "⏳ Saving to Sheets...",
+        savedSheet: "✓ Saved to Sheets",
+        ebaySoldBtn: "🔍 eBay Sold",
+        copyTitleBtn: "📋 Copy Listing Title",
+        copyTitleShort: "Copy Title",
+        copyDescShort: "Copy Desc",
+        copiedTitle: "✅ eBay listing title copied!",
+        copiedDesc: "✅ eBay description copied!"
+      },
+      ko: {
+        hubPhotoTitle: "Take a Photo · AI 사진 스캔",
+        hubPhotoSub: "사진 한 장으로 상품 식별 · 시세 · 최대 매입가 분석",
+        hubUpcTitle: "Scan UPC Barcode",
+        hubUpcSub: "실시간 바코드 1초 조회 · AI 수익성 평가",
+        hubStorageTitle: "Storage Auction",
+        hubStorageSub: "유닛 다중 사진 · 안전 입찰가 계산",
+        photoDropTitle: "상품 사진 촬영 또는 앨범 선택",
+        photoDropSub: "바코드 없는 의류·신발·빈티지·잡화도 AI가 즉시 분석합니다",
+        photoAskLabel: "Asking Price ($ 매입가, 선택 또는 실제 매입가 입력)",
+        runPhotoBtn: "✨ AI 사진 분석 실행",
+        photoReady: "대기 중: 상품 사진을 촬영하거나 선택한 뒤 [AI 사진 분석 실행]을 누르세요.",
+        upcFrameHint: "골드 프레임 안에 UPC 바코드를 맞추세요",
+        startScanBtn: "📷 실시간 UPC 스캔 시작",
+        stopScanBtn: "정지",
+        upcCodeLabel: "스캔된 UPC / GTIN 코드",
+        upcReady: "대기 중: [실시간 UPC 스캔 시작]을 눌러 바코드를 인식하세요.",
+        evalIntro: "상품 상태를 선택하고 실제 매입가(Asking Price)를 입력해 매입 적합성을 판단하세요.",
+        condLabel: "PRODUCT CONDITION (필수 선택)",
+        evalAskLabel: "Asking Price ($ 매입가, 0보다 큰 금액 필수)",
+        runEvalBtn: "Analyze Profit & Decision",
+        evalReady: "분석 대기 중: UPC 조회 및 상품 정보 확인 후 상태와 매입가($)를 입력해 주세요.",
+        storageDropTitle: "스토리지 유닛 사진 선택 (최대 5장)",
+        storageDropSub: "품목별 eBay 시세 · 수수료 · 폐기비 · 세금을 반영해 MAX BID를 계산합니다",
+        storageBidLabel: "Current Bid ($ 현재 경매가, 선택 입력)",
+        runStorageBtn: "Analyze Unit & Calculate MAX BID",
+        storageReady: "대기 중: 스토리지 사진을 1~5장 선택한 뒤 분석을 실행하세요.",
+        settingsSummary: "⚙️ Resellpro Backend Endpoint 설정",
+        saveSheetBtn: "💾 Google Sheets에 저장",
+        savingSheet: "⏳ 시트 저장 중...",
+        savedSheet: "✓ 시트 저장 완료",
+        ebaySoldBtn: "🔍 eBay Sold 확인",
+        copyTitleBtn: "📋 리스팅 제목 복사",
+        copyTitleShort: "제목 복사",
+        copyDescShort: "설명 복사",
+        copiedTitle: "✅ eBay 리스팅 제목 복사 완료",
+        copiedDesc: "✅ eBay 상품 설명 복사 완료"
+      }
+    };
+
+    let currentLang = "en";
+    function t(key) {
+      return (I18N[currentLang] && I18N[currentLang][key]) || I18N.en[key] || key;
+    }
+
+    function applyLanguage(lang) {
+      currentLang = (lang === "ko") ? "ko" : "en";
+      localStorage.setItem(STORAGE_KEY_LANG, currentLang);
+      document.documentElement.lang = currentLang;
+      document.getElementById("langToggleBtn").textContent = currentLang === "ko" ? "🌐 KR ➔ EN" : "🌐 EN ➔ KR";
+
+      document.querySelectorAll("[data-i18n]").forEach(function(el) {
+        const key = el.getAttribute("data-i18n");
+        if (I18N[currentLang][key]) {
+          el.textContent = I18N[currentLang][key];
+        }
+      });
+    }
+
+    function toggleLanguage() {
+      applyLanguage(currentLang === "en" ? "ko" : "en");
+    }
+
+    (function initLanguage() {
+      const savedLang = localStorage.getItem(STORAGE_KEY_LANG);
+      if (savedLang === "en" || savedLang === "ko") {
+        applyLanguage(savedLang);
+      } else {
+        const navLang = (navigator.language || "en").toLowerCase();
+        applyLanguage(navLang.startsWith("ko") ? "ko" : "en");
+      }
+    })();
+
+    // ==========================================
+    // 상태 변수
+    // ==========================================
     let upcScannerInstance = null;
     let isScanLocked = false;
     let lastScannedUpc = "";
@@ -747,13 +857,8 @@
     let selectedPhotoPayload = null;
     let selectedStorageImages = [];
 
-    // ==========================================
-    // 모드 전환
-    // ==========================================
     function switchMode(mode) {
-      if (mode !== "upc") {
-        stopUpcScanner();
-      }
+      if (mode !== "upc") stopUpcScanner();
       ["photo", "upc", "storage"].forEach(function(m) {
         const panel = document.getElementById("panel-" + m);
         if (panel) panel.classList.toggle("active", m === mode);
@@ -763,9 +868,6 @@
       document.getElementById("hubStorageBtn").classList.toggle("active", mode === "storage");
     }
 
-    // ==========================================
-    // 공통 유틸리티 & 이미지 압축
-    // ==========================================
     (function initEndpoint() {
       const saved = localStorage.getItem(STORAGE_KEY_URL) || localStorage.getItem(LEGACY_STORAGE_KEY_URL) || DEFAULT_GAS_ENDPOINT_URL;
       if (saved) {
@@ -804,7 +906,7 @@
     async function postToGas_(payload) {
       const endpointUrl = getGasEndpointUrl();
       if (!endpointUrl || !/^https:\/\/script\.google\.com\/macros\/s\/.+\/exec$/i.test(endpointUrl)) {
-        throw new Error("유효한 GAS Web App Endpoint URL을 먼저 설정해 주세요.");
+        throw new Error(currentLang === "ko" ? "유효한 GAS Web App Endpoint URL을 먼저 설정해 주세요." : "Please set a valid GAS Web App Endpoint URL.");
       }
 
       const response = await fetch(endpointUrl, {
@@ -814,14 +916,14 @@
       });
 
       if (!response.ok) {
-        throw new Error("HTTP 상태 오류 (" + response.status + ") — GAS 배포 권한을 확인해 주세요.");
+        throw new Error("HTTP Error (" + response.status + ")");
       }
 
       const rawText = await response.text();
       try {
         return JSON.parse(rawText);
       } catch (e) {
-        throw new Error("GAS 응답이 JSON 형식이 아닙니다. Apps Script에서 새 버전으로 재배포했는지 확인해 주세요.");
+        throw new Error(currentLang === "ko" ? "GAS 응답이 JSON 형식이 아닙니다. 새 버전으로 재배포했는지 확인해 주세요." : "Invalid JSON response from backend.");
       }
     }
 
@@ -834,30 +936,20 @@
             let w = img.width;
             let h = img.height;
             if (w > maxDim || h > maxDim) {
-              if (w >= h) {
-                h = Math.round((h * maxDim) / w);
-                w = maxDim;
-              } else {
-                w = Math.round((w * maxDim) / h);
-                h = maxDim;
-              }
+              if (w >= h) { h = Math.round((h * maxDim) / w); w = maxDim; }
+              else { w = Math.round((w * maxDim) / h); h = maxDim; }
             }
             const canvas = document.createElement("canvas");
             canvas.width = w;
             canvas.height = h;
-            const ctx = canvas.getContext("2d");
-            ctx.drawImage(img, 0, 0, w, h);
+            canvas.getContext("2d").drawImage(img, 0, 0, w, h);
             const dataUrl = canvas.toDataURL("image/jpeg", quality);
-            resolve({
-              dataUrl: dataUrl,
-              base64: dataUrl.split(",").pop(),
-              mimeType: "image/jpeg"
-            });
+            resolve({ dataUrl: dataUrl, base64: dataUrl.split(",").pop(), mimeType: "image/jpeg" });
           };
-          img.onerror = function() { reject(new Error("이미지를 읽지 못했습니다.")); };
+          img.onerror = function() { reject(new Error("Image load failed.")); };
           img.src = evt.target.result;
         };
-        reader.onerror = function() { reject(new Error("파일 읽기에 실패했습니다.")); };
+        reader.onerror = function() { reject(new Error("File read failed.")); };
         reader.readAsDataURL(file);
       });
     }
@@ -868,29 +960,31 @@
       const el = document.getElementById(logTargetId || "evalStatusBox");
       try {
         await navigator.clipboard.writeText(text);
-        if (el) el.textContent = fieldType === "title" ? "✅ eBay 리스팅 제목 복사 완료" : "✅ eBay 상품 설명 복사 완료";
+        if (el) el.textContent = fieldType === "title" ? t("copiedTitle") : t("copiedDesc");
       } catch (e) {
-        if (el) el.textContent = "⚠️ 클립보드 복사 실패 — 텍스트를 길게 눌러 복사해 주세요.";
+        if (el) el.textContent = "⚠️ Copy failed. Please copy manually.";
       }
     }
 
     // ==========================================
-    // MODE 1: TAKE A PHOTO (AI PHOTO SCAN)
+    // MODE 1: TAKE A PHOTO
     // ==========================================
     async function onPhotoSelected(input) {
       const file = input.files && input.files[0];
       if (!file) return;
       const statusEl = document.getElementById("photoStatusBox");
-      statusEl.textContent = "⏳ 사진 최적화 중...";
+      statusEl.textContent = currentLang === "ko" ? "⏳ 사진 최적화 중..." : "⏳ Optimizing photo...";
       try {
         const compressed = await compressImageFile_(file, 1024, 0.78);
         selectedPhotoPayload = compressed;
         const preview = document.getElementById("photoPreview");
         preview.src = compressed.dataUrl;
         preview.style.display = "block";
-        statusEl.textContent = "✅ 사진 준비 완료! 매입가($)를 입력하거나 바로 [AI 사진 분석 실행]을 누르세요.";
+        statusEl.textContent = currentLang === "ko"
+          ? "✅ 사진 준비 완료! 매입가($)를 입력하거나 바로 [AI 사진 분석 실행]을 누르세요."
+          : "✅ Photo ready! Enter asking price ($) or tap [Analyze Photo with AI].";
       } catch (err) {
-        statusEl.textContent = "❌ 사진 처리 오류: " + (err.message || err);
+        statusEl.textContent = "❌ " + (err.message || err);
       }
     }
 
@@ -898,7 +992,7 @@
       const statusEl = document.getElementById("photoStatusBox");
       const card = document.getElementById("photoResultCard");
       if (!selectedPhotoPayload) {
-        statusEl.textContent = "❌ 먼저 상품 사진을 촬영하거나 선택해 주세요.";
+        statusEl.textContent = currentLang === "ko" ? "❌ 먼저 상품 사진을 촬영하거나 선택해 주세요." : "❌ Please take or select a photo first.";
         return;
       }
 
@@ -907,7 +1001,9 @@
       btn.disabled = true;
       card.style.display = "none";
       card.innerHTML = "";
-      statusEl.textContent = "⏳ Resellpro Vision AI 분석 · eBay 시세 조회 · Google Sheets 자동 기록 중...";
+      statusEl.textContent = currentLang === "ko"
+        ? "⏳ Resellpro Vision AI 분석 · eBay 시세 조회 · 시트 자동 저장 중..."
+        : "⏳ Running Resellpro Vision AI · eBay Comps · Auto-saving to Sheets...";
 
       try {
         const res = await postToGas_({
@@ -919,16 +1015,18 @@
         });
 
         if (!res || !res.success || !res.data) {
-          throw new Error(res && res.error ? res.error : "사진 분석 응답이 올바르지 않습니다.");
+          throw new Error(res && res.error ? res.error : "Invalid response.");
         }
 
-        statusEl.textContent = "✅ AI 사진 분석 완료 (Mobile_AI_Appraisals 시트 자동 저장됨)";
+        statusEl.textContent = currentLang === "ko"
+          ? "✅ AI 사진 분석 완료 (Mobile_AI_Appraisals 시트 자동 저장됨)"
+          : "✅ AI Photo Analysis Complete (Auto-saved to Sheets)";
         renderPhotoAnalysisResult_(res.data);
       } catch (err) {
         const msg = err && err.message ? err.message : String(err);
-        statusEl.textContent = "❌ 사진 분석 실패: " + msg;
+        statusEl.textContent = "❌ " + msg;
         card.style.display = "block";
-        card.innerHTML = `<div class="alert-box">AI 사진 분석 오류\n${escapeHtml_(msg)}</div>`;
+        card.innerHTML = `<div class="alert-box">${escapeHtml_(msg)}</div>`;
       } finally {
         btn.disabled = false;
       }
@@ -940,8 +1038,7 @@
 
       const conf = Math.max(0, Math.min(100, Number(d.confidence_score || 0)));
       const decision = String(d.decision || "PASS").toUpperCase();
-      let bannerCls = "pass";
-      let pillBg = "var(--status-pass)";
+      let bannerCls = "pass", pillBg = "var(--status-pass)";
       if (decision === "BUY") { bannerCls = "buy"; pillBg = "var(--status-buy)"; }
       else if (decision === "MAYBE" || decision === "ENTER PRICE") { bannerCls = "maybe"; pillBg = "var(--status-maybe)"; }
 
@@ -953,8 +1050,8 @@
 
       const ebayLive = d.ebay_live_data;
       const marketRangeHtml = (ebayLive && ebayLive.count > 0)
-        ? `<div class="meta-line tabular">eBay 현재 리스팅 ${ebayLive.count}건 · Low $${Number(ebayLive.min).toFixed(2)} / Avg $${Number(ebayLive.avg).toFixed(2)} / High $${Number(ebayLive.max).toFixed(2)}</div>`
-        : `<div class="meta-line">eBay 현재 리스팅: ${escapeHtml_(d.ebay_live_note || "없음")}</div>`;
+        ? `<div class="meta-line tabular">eBay Active (${ebayLive.count}) · Low $${Number(ebayLive.min).toFixed(2)} / Avg $${Number(ebayLive.avg).toFixed(2)} / High $${Number(ebayLive.max).toFixed(2)}</div>`
+        : `<div class="meta-line">eBay Active: ${escapeHtml_(d.ebay_live_note || "N/A")}</div>`;
 
       const thumbSrc = selectedPhotoPayload ? selectedPhotoPayload.dataUrl : "";
 
@@ -971,7 +1068,7 @@
         </div>
 
         <div class="market-gold-card">
-          <div style="font-size:11px; color:var(--text-secondary); font-weight:700;">Estimated Resale Price (eBay 기준)</div>
+          <div style="font-size:11px; color:var(--text-secondary); font-weight:700;">Estimated Resale Price (eBay)</div>
           <div class="market-big-price tabular">$${Number(d.ai_est_resale_price || 0).toFixed(2)}</div>
           ${marketRangeHtml}
         </div>
@@ -997,31 +1094,20 @@
         <div class="meta-line" style="margin-top:8px; color:var(--text-primary);">${escapeHtml_(d.analysis_summary || "")}</div>
 
         <div class="btn-row" style="margin-top:12px;">
-          ${d.ebay_sold_url ? `<a href="${escapeHtml_(d.ebay_sold_url)}" target="_blank" rel="noopener noreferrer" class="btn-secondary" style="flex:1; height:42px;">🔍 eBay Sold 확인</a>` : ""}
-          <button type="button" class="btn-secondary" style="flex:1; height:42px; color:var(--accent-gold-bright);" onclick="copyListingField_('title', 'photoStatusBox')">📋 리스팅 제목 복사</button>
+          ${d.ebay_sold_url ? `<a href="${escapeHtml_(d.ebay_sold_url)}" target="_blank" rel="noopener noreferrer" class="btn-secondary" style="flex:1; height:42px;">${t("ebaySoldBtn")}</a>` : ""}
+          <button type="button" class="btn-secondary" style="flex:1; height:42px; color:var(--accent-gold-bright);" onclick="copyListingField_('title', 'photoStatusBox')">${t("copyTitleBtn")}</button>
         </div>
       `;
     }
 
     // ==========================================
-    // MODE 2: UPC SCANNER + 4-1 + 4-2 + 4-3 시트 저장
+    // MODE 2: UPC SCANNER
     // ==========================================
     function createEmptyLookupState() {
       return {
-        upc: "",
-        found: false,
-        isUrl: false,
-        url: "",
-        image: "",
-        category: "",
-        priceSource: "NONE",
-        originalTitle: "",
-        originalBrand: "",
-        originalAvgPrice: null,
-        userAdjustedTitle: "",
-        userAdjustedBrand: "",
-        userAdjustedPrice: null,
-        isPriceEdited: false
+        upc: "", found: false, isUrl: false, url: "", image: "", category: "",
+        priceSource: "NONE", originalTitle: "", originalBrand: "", originalAvgPrice: null,
+        userAdjustedTitle: "", userAdjustedBrand: "", userAdjustedPrice: null, isPriceEdited: false
       };
     }
 
@@ -1037,27 +1123,15 @@
       const cleanCode = String(code || (product && product.code) || "").trim();
       const p = product || {};
       const parsedAvg = (p.avgPrice !== undefined && p.avgPrice !== null && p.avgPrice !== "" && !isNaN(Number(p.avgPrice)) && Number(p.avgPrice) > 0)
-        ? Number(Number(p.avgPrice).toFixed(2))
-        : null;
-
-      const titleVal = p.title ? String(p.title) : "";
-      const brandVal = p.brand ? String(p.brand) : "";
+        ? Number(Number(p.avgPrice).toFixed(2)) : null;
 
       upcLookupState = {
-        upc: cleanCode,
-        found: Boolean(p.found),
-        isUrl: Boolean(p.isUrl),
-        url: p.url ? String(p.url) : "",
-        image: p.image ? String(p.image) : "",
-        category: p.category ? String(p.category) : "",
-        priceSource: detectPriceSource_(p),
-        originalTitle: titleVal,
-        originalBrand: brandVal,
-        originalAvgPrice: parsedAvg,
-        userAdjustedTitle: titleVal,
-        userAdjustedBrand: brandVal,
-        userAdjustedPrice: parsedAvg,
-        isPriceEdited: false
+        upc: cleanCode, found: Boolean(p.found), isUrl: Boolean(p.isUrl),
+        url: p.url ? String(p.url) : "", image: p.image ? String(p.image) : "",
+        category: p.category ? String(p.category) : "", priceSource: detectPriceSource_(p),
+        originalTitle: p.title ? String(p.title) : "", originalBrand: p.brand ? String(p.brand) : "",
+        originalAvgPrice: parsedAvg, userAdjustedTitle: p.title ? String(p.title) : "",
+        userAdjustedBrand: p.brand ? String(p.brand) : "", userAdjustedPrice: parsedAvg, isPriceEdited: false
       };
     }
 
@@ -1065,11 +1139,7 @@
     function onEditProductBrand(value) { upcLookupState.userAdjustedBrand = String(value || ""); }
     function onEditProductPrice(value) {
       const trimmed = String(value ?? "").trim();
-      if (trimmed === "") {
-        upcLookupState.userAdjustedPrice = null;
-        upcLookupState.isPriceEdited = true;
-        return;
-      }
+      if (trimmed === "") { upcLookupState.userAdjustedPrice = null; upcLookupState.isPriceEdited = true; return; }
       const num = Number(trimmed);
       if (!isNaN(num) && num >= 0) {
         upcLookupState.userAdjustedPrice = Number(num.toFixed(2));
@@ -1077,42 +1147,27 @@
       }
     }
 
-    function getEffectivePrice() {
-      return upcLookupState.isPriceEdited ? upcLookupState.userAdjustedPrice : upcLookupState.originalAvgPrice;
-    }
+    function getEffectivePrice() { return upcLookupState.isPriceEdited ? upcLookupState.userAdjustedPrice : upcLookupState.originalAvgPrice; }
 
     function getAiEvaluationCandidatePayload() {
       const effectivePrice = getEffectivePrice();
       return {
-        upc: upcLookupState.upc,
-        found: upcLookupState.found,
-        category: upcLookupState.category,
-        image: upcLookupState.image,
-        title: upcLookupState.userAdjustedTitle || upcLookupState.originalTitle,
-        brand: upcLookupState.userAdjustedBrand || upcLookupState.originalBrand,
-        price: effectivePrice,
+        upc: upcLookupState.upc, found: upcLookupState.found, category: upcLookupState.category,
+        image: upcLookupState.image, title: upcLookupState.userAdjustedTitle || upcLookupState.originalTitle,
+        brand: upcLookupState.userAdjustedBrand || upcLookupState.originalBrand, price: effectivePrice,
         pricing: {
-          originalAvgPrice: upcLookupState.originalAvgPrice,
-          priceSource: upcLookupState.priceSource,
-          userAdjustedPrice: effectivePrice,
-          isPriceEdited: upcLookupState.isPriceEdited,
-          priceBasis: upcLookupState.priceSource === "EBAY_BROWSE_API"
-            ? "EBAY_CURRENT_ACTIVE_LISTING_AVG"
+          originalAvgPrice: upcLookupState.originalAvgPrice, priceSource: upcLookupState.priceSource,
+          userAdjustedPrice: effectivePrice, isPriceEdited: upcLookupState.isPriceEdited,
+          priceBasis: upcLookupState.priceSource === "EBAY_BROWSE_API" ? "EBAY_CURRENT_ACTIVE_LISTING_AVG"
             : (upcLookupState.priceSource === "UPCITEMDB" ? "UPCITEMDB_REFERENCE_PRICE" : "NONE")
         },
-        original: {
-          title: upcLookupState.originalTitle,
-          brand: upcLookupState.originalBrand,
-          avgPrice: upcLookupState.originalAvgPrice,
-          priceSource: upcLookupState.priceSource
-        }
+        original: { title: upcLookupState.originalTitle, brand: upcLookupState.originalBrand, avgPrice: upcLookupState.originalAvgPrice, priceSource: upcLookupState.priceSource }
       };
     }
 
     function selectProductCondition(cond) {
       selectedProductCondition = cond;
-      const chips = document.querySelectorAll("#conditionChips .cond-chip");
-      chips.forEach(function(btn) {
+      document.querySelectorAll("#conditionChips .cond-chip").forEach(function(btn) {
         btn.classList.toggle("active", btn.getAttribute("data-cond") === cond);
       });
     }
@@ -1138,43 +1193,23 @@
     function renderUpcResult(code, product) {
       syncLookupStateFromResponse(code, product);
       hideEvalResultCard();
-      setEvalLog("분석 대기 중: 상품 상태를 선택하고 0보다 큰 매입가($)를 입력한 뒤 [Analyze Profit & Decision]을 누르세요.");
+      setEvalLog(t("evalReady"));
 
       const card = document.getElementById("upcResultCard");
       card.style.display = "block";
 
       if (product && product.isUrl) {
-        card.innerHTML = `
-          <div style="color:var(--status-buy); font-weight:700; margin-bottom:4px;">🔗 URL 인식됨</div>
-          <div class="meta-line">코드/입력값: ${escapeHtml_(upcLookupState.upc)}</div>
-          <a href="${escapeHtml_(product.url)}" target="_blank" rel="noopener noreferrer" style="color:var(--accent-gold-bright); word-break:break-all; display:inline-block; margin-top:6px;">${escapeHtml_(product.url)}</a>
-        `;
+        card.innerHTML = `<div style="color:var(--status-buy); font-weight:700;">🔗 URL Detected</div><a href="${escapeHtml_(product.url)}" target="_blank" rel="noopener noreferrer" style="color:var(--accent-gold-bright); word-break:break-all; display:inline-block; margin-top:6px;">${escapeHtml_(product.url)}</a>`;
         return;
       }
 
-      const thumbHtml = upcLookupState.image
-        ? `<img src="${escapeHtml_(upcLookupState.image)}" class="result-thumb" alt="product">`
-        : "";
-
-      let priceDisplayHtml = `<div class="meta-line">조회 가격 데이터: 없음</div>`;
-      let editPriceLabel = "참고 가격 ($ 수정 가능)";
-      let editPriceHint = "조회된 가격 데이터가 없습니다. 필요 시 참고 가격을 직접 입력하세요.";
-
+      const thumbHtml = upcLookupState.image ? `<img src="${escapeHtml_(upcLookupState.image)}" class="result-thumb" alt="product">` : "";
+      let priceDisplayHtml = `<div class="meta-line">Price Data: None</div>`;
       if (upcLookupState.priceSource === "EBAY_BROWSE_API" && upcLookupState.originalAvgPrice !== null) {
-        const formatted = `$${upcLookupState.originalAvgPrice.toFixed(2)}`;
-        priceDisplayHtml = `<div class="meta-line tabular" style="color:var(--accent-gold-bright); font-weight:700;">eBay Current Average: ${formatted}</div>`;
-        editPriceLabel = "User Adjusted Reference Price ($ 수정 가능)";
-        editPriceHint = `Original eBay Current Listing Average: ${formatted} (미수정 시 원본값 유지)`;
+        priceDisplayHtml = `<div class="meta-line tabular" style="color:var(--accent-gold-bright); font-weight:700;">eBay Current Average: $${upcLookupState.originalAvgPrice.toFixed(2)}</div>`;
       } else if (upcLookupState.priceSource === "UPCITEMDB" && upcLookupState.originalAvgPrice !== null) {
-        const formatted = `$${upcLookupState.originalAvgPrice.toFixed(2)}`;
-        priceDisplayHtml = `<div class="meta-line tabular" style="color:var(--status-maybe); font-weight:700;">UPCitemdb 참고가: ${formatted} (eBay Current Average 아님)</div>`;
-        editPriceLabel = "User Adjusted Reference Price ($ 수정 가능)";
-        editPriceHint = `UPCitemdb 참고가: ${formatted} (eBay Current Average가 아니며 미수정 시 해당 참고가 유지)`;
+        priceDisplayHtml = `<div class="meta-line tabular" style="color:var(--status-maybe); font-weight:700;">UPCitemdb Reference: $${upcLookupState.originalAvgPrice.toFixed(2)}</div>`;
       }
-
-      const categoryText = upcLookupState.category ? upcLookupState.category : "카테고리 정보 없음";
-      const brandText = upcLookupState.originalBrand ? upcLookupState.originalBrand : "브랜드 정보 없음";
-      const titleText = upcLookupState.originalTitle ? upcLookupState.originalTitle : "조회된 상품명 없음";
 
       const headerBadge = product && product.found
         ? `<div style="color:var(--status-buy); font-weight:800; font-size:11.5px;">✓ UPC MATCHED · ${escapeHtml_(upcLookupState.upc)}</div>`
@@ -1187,28 +1222,26 @@
           ${thumbHtml}
           <div style="flex:1; min-width:0;">
             ${headerBadge}
-            <div style="color:var(--text-primary); font-weight:700; font-size:14px; margin-top:4px; word-break:break-word;">${escapeHtml_(titleText)}</div>
-            <div class="meta-line">브랜드: ${escapeHtml_(brandText)}</div>
-            <div class="meta-line">카테고리: ${escapeHtml_(categoryText)}</div>
+            <div style="color:var(--text-primary); font-weight:700; font-size:14px; margin-top:4px; word-break:break-word;">${escapeHtml_(upcLookupState.originalTitle || "No title found")}</div>
+            <div class="meta-line">Brand: ${escapeHtml_(upcLookupState.originalBrand || "N/A")} · ${escapeHtml_(upcLookupState.category || "General")}</div>
             ${priceDisplayHtml}
           </div>
         </div>
 
         <div class="edit-box">
-          <div style="color:var(--text-primary); font-weight:700; font-size:12px;">상품 정보 확인 및 보정</div>
+          <div style="color:var(--text-primary); font-weight:700; font-size:12px;">${currentLang === "ko" ? "상품 정보 확인 및 보정" : "Verify / Edit Item Details"}</div>
           <div class="edit-grid">
             <div>
-              <label class="label">상품명 (수정 가능)</label>
-              <input type="text" id="editTitleInput" class="input" value="${escapeHtml_(upcLookupState.userAdjustedTitle)}" placeholder="상품명을 입력하거나 수정하세요" oninput="onEditProductTitle(this.value)">
+              <label class="label">${currentLang === "ko" ? "상품명 (수정 가능)" : "Product Title (Editable)"}</label>
+              <input type="text" class="input" value="${escapeHtml_(upcLookupState.userAdjustedTitle)}" oninput="onEditProductTitle(this.value)">
             </div>
             <div>
-              <label class="label">브랜드 (수정 가능)</label>
-              <input type="text" id="editBrandInput" class="input" value="${escapeHtml_(upcLookupState.userAdjustedBrand)}" placeholder="브랜드를 입력하거나 수정하세요" oninput="onEditProductBrand(this.value)">
+              <label class="label">${currentLang === "ko" ? "브랜드 (수정 가능)" : "Brand (Editable)"}</label>
+              <input type="text" class="input" value="${escapeHtml_(upcLookupState.userAdjustedBrand)}" oninput="onEditProductBrand(this.value)">
             </div>
             <div>
-              <label class="label">${escapeHtml_(editPriceLabel)}</label>
-              <input type="number" id="editPriceInput" step="0.01" min="0" inputmode="decimal" class="input tabular" value="${escapeHtml_(priceInputDefault)}" placeholder="예: 29.99" oninput="onEditProductPrice(this.value)">
-              <div class="edit-note">${escapeHtml_(editPriceHint)}</div>
+              <label class="label">User Adjusted Reference Price ($)</label>
+              <input type="number" step="0.01" min="0" inputmode="decimal" class="input tabular" value="${escapeHtml_(priceInputDefault)}" oninput="onEditProductPrice(this.value)">
             </div>
           </div>
         </div>
@@ -1218,50 +1251,46 @@
     async function runAiEvaluationFromUpc() {
       const candidate = getAiEvaluationCandidatePayload();
       if (!candidate.title && !candidate.upc) {
-        setEvalLog("❌ 평가할 상품명 또는 UPC 코드가 없습니다. 먼저 UPC를 스캔하거나 상품명을 입력해 주세요.");
+        setEvalLog(currentLang === "ko" ? "❌ 먼저 UPC를 스캔하거나 상품명을 입력해 주세요." : "❌ Please scan a UPC or enter a title first.");
         return;
       }
       if (!selectedProductCondition) {
-        setEvalLog("❌ 상품 상태(PRODUCT CONDITION)를 선택해 주세요.");
+        setEvalLog(currentLang === "ko" ? "❌ 상품 상태(PRODUCT CONDITION)를 선택해 주세요." : "❌ Please select a Product Condition.");
         return;
       }
 
       const rawAsking = document.getElementById("askingPriceInput").value.trim();
       const askingNum = Number(rawAsking);
       if (rawAsking === "" || !isFinite(askingNum) || askingNum <= 0) {
-        setEvalLog("❌ 유효한 매입가(Asking Price, 0보다 큰 금액)를 입력해야 AI 평가를 실행할 수 있습니다.");
+        setEvalLog(currentLang === "ko" ? "❌ 0보다 큰 매입가(Asking Price)를 입력해 주세요." : "❌ Please enter a valid Asking Price (> 0).");
         return;
       }
 
       const btn = document.getElementById("runEvalBtn");
       btn.disabled = true;
       hideEvalResultCard();
-      setEvalLog("⏳ Resellpro AI 수익성 분석 중...");
+      setEvalLog(currentLang === "ko" ? "⏳ Resellpro AI 수익성 분석 중..." : "⏳ Analyzing profit & market comps...");
 
       try {
         const data = await postToGas_({
           action: "evaluateUpcItem",
-          upc: candidate.upc,
-          title: candidate.title,
-          brand: candidate.brand,
-          category: candidate.category,
-          condition: selectedProductCondition,
-          askingPrice: Number(askingNum.toFixed(2)),
-          pricing: candidate.pricing
+          upc: candidate.upc, title: candidate.title, brand: candidate.brand,
+          category: candidate.category, condition: selectedProductCondition,
+          askingPrice: Number(askingNum.toFixed(2)), pricing: candidate.pricing
         });
 
         if (!data || !data.success || !data.agent) {
-          throw new Error(data && data.error ? data.error : "AI 평가 응답이 올바르지 않습니다.");
+          throw new Error(data && data.error ? data.error : "Evaluation failed.");
         }
 
-        setEvalLog("✅ Resellpro AI 분석 완료");
+        setEvalLog(currentLang === "ko" ? "✅ Resellpro AI 분석 완료" : "✅ Resellpro AI Analysis Complete");
         renderAgentEvaluationResult(data.agent, Number(askingNum.toFixed(2)), candidate);
       } catch (err) {
         const msg = err && err.message ? err.message : String(err);
-        setEvalLog("❌ AI 평가 요청 실패: " + msg);
+        setEvalLog("❌ " + msg);
         const card = document.getElementById("evalResultCard");
         card.style.display = "block";
-        card.innerHTML = `<div class="alert-box">AI 평가 실행 실패\n사유: ${escapeHtml_(msg)}</div>`;
+        card.innerHTML = `<div class="alert-box">${escapeHtml_(msg)}</div>`;
       } finally {
         btn.disabled = false;
       }
@@ -1271,12 +1300,7 @@
       const card = document.getElementById("evalResultCard");
       card.style.display = "block";
 
-      const prod = agent.product || {};
-      const mkt = agent.market || {};
-      const fin = agent.financial || {};
-      const dec = agent.decision || {};
-      const lst = agent.listing || {};
-      const meta = agent.meta || {};
+      const prod = agent.product || {}, mkt = agent.market || {}, fin = agent.financial || {}, dec = agent.decision || {}, lst = agent.listing || {}, meta = agent.meta || {};
       const errors = Array.isArray(meta.errors) ? meta.errors : [];
 
       latestListingDraft = {
@@ -1284,68 +1308,10 @@
         description: lst.description ? String(lst.description) : ""
       };
 
-      const visionRan = meta.vision_engine === "GROQ" || meta.vision_engine === "GEMINI";
-      const aiConfidenceText = visionRan
-        ? `${Number(prod.confidence || 0)}% (${escapeHtml_(meta.vision_engine)})`
-        : "N/A (사진 Vision 미실행)";
-      const upcLookupStatusText = candidate && candidate.found
-        ? `조회 매칭됨 (${escapeHtml_(candidate.upc || "-")})`
-        : "조회 미매칭 / 미조회";
-
-      let origPriceLine = `<div class="kv-row"><span class="kv-label">eBay Current Average (eBay Browse API)</span><span class="kv-val">해당 없음 / 미조회</span></div>`;
-      if (candidate && candidate.pricing && candidate.pricing.priceSource === "EBAY_BROWSE_API" && candidate.pricing.originalAvgPrice !== null) {
-        origPriceLine = `<div class="kv-row"><span class="kv-label">eBay Current Average (eBay Browse API)</span><span class="kv-val tabular">$${Number(candidate.pricing.originalAvgPrice).toFixed(2)}</span></div>`;
-      } else if (candidate && candidate.pricing && candidate.pricing.priceSource === "UPCITEMDB" && candidate.pricing.originalAvgPrice !== null) {
-        origPriceLine = `<div class="kv-row"><span class="kv-label">UPCitemdb 참고가 (eBay Current Average 아님)</span><span class="kv-val tabular">$${Number(candidate.pricing.originalAvgPrice).toFixed(2)}</span></div>`;
-      }
-
-      const userRefLine = (candidate && candidate.pricing && candidate.pricing.userAdjustedPrice !== null && candidate.pricing.userAdjustedPrice !== undefined)
-        ? `<div class="kv-row"><span class="kv-label">User Adjusted Reference (참고용, 계산 미반영)</span><span class="kv-val tabular">$${Number(candidate.pricing.userAdjustedPrice).toFixed(2)}</span></div>`
-        : `<div class="kv-row"><span class="kv-label">User Adjusted Reference (참고용, 계산 미반영)</span><span class="kv-val">없음</span></div>`;
-
       const hasAgentSalePrice = meta.price_source && meta.price_source !== "NONE" && Number(fin.suggested_sale_price) > 0;
-      const agentSuggestedLine = hasAgentSalePrice
-        ? `<div class="kv-row"><span class="kv-label">Agent Suggested Sale Price (${escapeHtml_(meta.price_source)})</span><span class="kv-val tabular">$${Number(fin.suggested_sale_price).toFixed(2)}</span></div>`
-        : `<div class="kv-row"><span class="kv-label">Agent Suggested Sale Price</span><span class="kv-val">산출 불가 (가격 기준 없음)</span></div>`;
-
       const ebayFailed = meta.current_market_available === false;
-      let marketBlockHtml = "";
-      if (ebayFailed) {
-        marketBlockHtml += `<div class="warn-box">⚠️ eBay 현재 리스팅 검색 실패 또는 매물 없음 (검색어: ${escapeHtml_(meta.search_query || "-")})</div>`;
-      } else {
-        marketBlockHtml += `
-          <div class="kv-row"><span class="kv-label">현재 리스팅 수</span><span class="kv-val tabular">${Number(mkt.current_listing_count || 0)}건</span></div>
-          <div class="kv-row"><span class="kv-label">현재 리스팅 Low / Avg / High</span><span class="kv-val tabular">$${Number(mkt.current_low || 0).toFixed(2)} / $${Number(mkt.current_avg || 0).toFixed(2)} / $${Number(mkt.current_high || 0).toFixed(2)}</span></div>
-        `;
-      }
-
-      if (meta.sold_data_available === true && Number(mkt.sold_count) > 0) {
-        marketBlockHtml += `
-          <div class="kv-row"><span class="kv-label">SOLD 데이터 (${Number(mkt.sold_count)}건)</span><span class="kv-val tabular">평균 $${Number(mkt.sold_avg || 0).toFixed(2)} / 중간값 $${Number(mkt.sold_median || 0).toFixed(2)}</span></div>
-          <div class="kv-row"><span class="kv-label">SOLD Low / High</span><span class="kv-val tabular">$${Number(mkt.sold_low || 0).toFixed(2)} / $${Number(mkt.sold_high || 0).toFixed(2)}</span></div>
-        `;
-      } else {
-        marketBlockHtml += `<div class="kv-row"><span class="kv-label">SOLD 데이터</span><span class="kv-val">실제 SOLD 데이터 없음 (미조회/미연동)</span></div>`;
-      }
-
-      let financialBlockHtml = "";
-      if (!hasAgentSalePrice) {
-        financialBlockHtml = `<div class="warn-box">⚠️ 시장 가격 기준이 없어 예상 판매가·수수료·순이익·ROI·최대 매입가를 산출할 수 없습니다.</div>`;
-      } else {
-        financialBlockHtml = `
-          <div class="kv-row"><span class="kv-label">예상 판매가격</span><span class="kv-val tabular">$${Number(fin.suggested_sale_price).toFixed(2)}</span></div>
-          <div class="kv-row"><span class="kv-label">매입가 (Asking Price)</span><span class="kv-val tabular">$${Number(askingPrice).toFixed(2)}</span></div>
-          <div class="kv-row"><span class="kv-label">eBay Fee / 배송비</span><span class="kv-val tabular">$${Number(fin.ebay_fee || 0).toFixed(2)} / $${Number(fin.shipping_cost || 0).toFixed(2)}</span></div>
-          <div class="kv-row"><span class="kv-label">예상 순이익</span><span class="kv-val tabular" style="color:${Number(fin.estimated_profit) >= 0 ? 'var(--status-buy)' : 'var(--status-pass)'};">$${Number(fin.estimated_profit || 0).toFixed(2)}</span></div>
-          <div class="kv-row"><span class="kv-label">ROI</span><span class="kv-val tabular" style="color:var(--accent-gold-bright);">${Number(fin.roi || 0)}%</span></div>
-          <div class="kv-row"><span class="kv-label">최대 매입가 (Max Buy)</span><span class="kv-val tabular" style="color:var(--accent-gold-bright);">$${Number(fin.max_buy_price || 0).toFixed(2)}</span></div>
-        `;
-      }
-
-      const aiFailed = meta.vision_engine === "FAILED" || (errors.some(function(e) { return String(e).indexOf("실패") >= 0 || String(e).indexOf("오류") >= 0; }) && !hasAgentSalePrice);
       const decisionResult = dec.result || "PASS";
-      let bannerCls = "pass";
-      let decisionBg = "var(--status-pass)";
+      let bannerCls = "pass", decisionBg = "var(--status-pass)";
       if (decisionResult === "BUY") { bannerCls = "buy"; decisionBg = "var(--status-buy)"; }
       else if (decisionResult === "MAYBE") { bannerCls = "maybe"; decisionBg = "var(--status-maybe)"; }
 
@@ -1354,44 +1320,36 @@
       const searchQueryText = meta.search_query || candidate.title || candidate.upc || "";
       const ebaySoldDirectUrl = "https://www.ebay.com/sch/i.html?_nkw=" + encodeURIComponent(searchQueryText) + "&LH_Complete=1&LH_Sold=1";
 
-      // 4-3 시트 저장용 스냅샷 보관
       latestUpcEvalSnapshot = {
         action: "saveUpcAppraisal",
-        upc: candidate.upc || "",
-        title: prod.name || candidate.title || "",
-        brand: prod.brand || candidate.brand || "Unknown",
-        category: prod.category || candidate.category || "General",
-        condition: prod.condition || selectedProductCondition || "",
-        confidence: visionRan ? Number(prod.confidence || 0) : "N/A",
-        askingPrice: Number(askingPrice),
-        suggestedSalePrice: hasAgentSalePrice ? Number(fin.suggested_sale_price || 0) : 0,
-        ebayFee: hasAgentSalePrice ? Number(fin.ebay_fee || 0) : 0,
-        shippingCost: hasAgentSalePrice ? Number(fin.shipping_cost || 0) : 0,
-        maxBuyPrice: hasAgentSalePrice ? Number(fin.max_buy_price || 0) : 0,
-        estimatedProfit: hasAgentSalePrice ? Number(fin.estimated_profit || 0) : 0,
-        roi: hasAgentSalePrice ? Number(fin.roi || 0) : 0,
-        decision: decisionResult,
+        upc: candidate.upc || "", title: prod.name || candidate.title || "",
+        brand: prod.brand || candidate.brand || "Unknown", category: prod.category || candidate.category || "General",
+        condition: prod.condition || selectedProductCondition || "", confidence: "N/A",
+        askingPrice: Number(askingPrice), suggestedSalePrice: hasAgentSalePrice ? Number(fin.suggested_sale_price || 0) : 0,
+        ebayFee: hasAgentSalePrice ? Number(fin.ebay_fee || 0) : 0, shippingCost: hasAgentSalePrice ? Number(fin.shipping_cost || 0) : 0,
+        maxBuyPrice: hasAgentSalePrice ? Number(fin.max_buy_price || 0) : 0, estimatedProfit: hasAgentSalePrice ? Number(fin.estimated_profit || 0) : 0,
+        roi: hasAgentSalePrice ? Number(fin.roi || 0) : 0, decision: decisionResult,
         grade: decisionResult === "BUY" ? "A" : (decisionResult === "MAYBE" ? "B" : "C"),
-        reason: dec.reason || "",
-        searchQuery: searchQueryText,
-        imageUrl: candidate.image || "",
+        reason: dec.reason || "", searchQuery: searchQueryText, imageUrl: candidate.image || "",
         ebayLiveAvg: !ebayFailed && Number(mkt.current_avg) > 0 ? Number(mkt.current_avg) : ""
       };
 
-      const aiFailureNotice = aiFailed
-        ? `<div class="alert-box">❌ AI / 시장 분석 오류 발생\n${escapeHtml_(errors.join("\n"))}</div>`
-        : (errors.length > 0 ? `<div class="warn-box">참고 로그:\n${escapeHtml_(errors.join("\n"))}</div>` : "");
-
-      const listingTitleText = lst.title ? escapeHtml_(lst.title) : "생성된 리스팅 제목 없음";
-      const listingDescText = lst.description ? escapeHtml_(lst.description) : "생성된 상품 설명 없음";
+      const financialBlockHtml = !hasAgentSalePrice
+        ? `<div class="warn-box">⚠️ No market price basis available to calculate profit.</div>`
+        : `
+          <div class="kv-row"><span class="kv-label">Est. Sale Price</span><span class="kv-val tabular">$${Number(fin.suggested_sale_price).toFixed(2)}</span></div>
+          <div class="kv-row"><span class="kv-label">Asking Price</span><span class="kv-val tabular">$${Number(askingPrice).toFixed(2)}</span></div>
+          <div class="kv-row"><span class="kv-label">eBay Fee / Shipping</span><span class="kv-val tabular">$${Number(fin.ebay_fee || 0).toFixed(2)} / $${Number(fin.shipping_cost || 0).toFixed(2)}</span></div>
+          <div class="kv-row"><span class="kv-label">Est. Net Profit</span><span class="kv-val tabular" style="color:${Number(fin.estimated_profit) >= 0 ? 'var(--status-buy)' : 'var(--status-pass)'};">$${Number(fin.estimated_profit || 0).toFixed(2)}</span></div>
+          <div class="kv-row"><span class="kv-label">ROI</span><span class="kv-val tabular" style="color:var(--accent-gold-bright);">${Number(fin.roi || 0)}%</span></div>
+        `;
 
       card.innerHTML = `
-        <!-- 시안 스타일 Recommended Max Buy Price 배너 -->
         <div class="max-buy-banner ${bannerCls}">
           <div>
             <div class="banner-kicker">Recommended Max Buy Price</div>
             <div class="banner-price tabular">${heroMaxBuyText}</div>
-            <div class="meta-line" style="color:var(--text-primary); opacity:0.85;">Score ${Number(dec.score || 0)}/100 · AI 신뢰도 ${aiConfidenceText}</div>
+            <div class="meta-line" style="color:#fff; opacity:0.85;">Score ${Number(dec.score || 0)}/100</div>
           </div>
           <div class="banner-decision-pill" style="background:${decisionBg};">
             <div>${escapeHtml_(decisionResult)}</div>
@@ -1399,129 +1357,81 @@
           </div>
         </div>
 
-        <div class="meta-line" style="color:var(--text-primary); margin-bottom:10px;">판정 이유: ${escapeHtml_(dec.reason || "")}</div>
+        <div class="meta-line" style="color:var(--text-primary); margin-bottom:10px;">${escapeHtml_(dec.reason || "")}</div>
 
-        <!-- 4-3 Google Sheets 저장 + eBay Sold 직통 버튼 -->
         <div class="btn-row" style="margin-bottom:12px;">
-          <button type="button" id="saveSheetBtn" class="btn-sheet-save" onclick="saveUpcResultToSheet()">💾 Google Sheets에 저장</button>
-          <a href="${escapeHtml_(ebaySoldDirectUrl)}" target="_blank" rel="noopener noreferrer" class="btn-secondary" style="height:44px; padding:0 12px;">🔍 eBay Sold</a>
+          <button type="button" id="saveSheetBtn" class="btn-sheet-save" onclick="saveUpcResultToSheet()">${t("saveSheetBtn")}</button>
+          <a href="${escapeHtml_(ebaySoldDirectUrl)}" target="_blank" rel="noopener noreferrer" class="btn-secondary" style="height:44px; padding:0 12px;">${t("ebaySoldBtn")}</a>
         </div>
 
-        <div class="eval-section-title"><span>PRODUCT & SEARCH QUERY</span></div>
-        <div class="kv-row"><span class="kv-label">상품명</span><span class="kv-val">${escapeHtml_(prod.name || candidate.title || "-")}</span></div>
-        <div class="kv-row"><span class="kv-label">브랜드</span><span class="kv-val">${escapeHtml_(prod.brand || candidate.brand || "-")}</span></div>
-        <div class="kv-row"><span class="kv-label">카테고리</span><span class="kv-val">${escapeHtml_(prod.category || candidate.category || "-")}</span></div>
-        <div class="kv-row"><span class="kv-label">상태 (Condition)</span><span class="kv-val">${escapeHtml_(prod.condition || selectedProductCondition || "-")}</span></div>
-        <div class="kv-row"><span class="kv-label">UPC 조회 상태</span><span class="kv-val">${upcLookupStatusText}</span></div>
-        <div class="kv-row"><span class="kv-label">Agent eBay 검색어 (meta.search_query)</span><span class="kv-val">${escapeHtml_(meta.search_query || "-")}</span></div>
-
-        <div class="eval-section-title"><span>MARKET & PRICE COMPARISON</span></div>
-        ${origPriceLine}
-        ${userRefLine}
-        ${agentSuggestedLine}
-        ${marketBlockHtml}
-
-        <div class="eval-section-title"><span>FINANCIAL BREAKDOWN</span></div>
+        <div class="eval-section-title"><span>MARKET & FINANCIALS</span></div>
+        ${ebayFailed ? `<div class="warn-box">⚠️ No eBay active listings found (${escapeHtml_(searchQueryText)})</div>` : `<div class="kv-row"><span class="kv-label">eBay Active (${Number(mkt.current_listing_count || 0)})</span><span class="kv-val tabular">$${Number(mkt.current_low || 0).toFixed(2)} / $${Number(mkt.current_avg || 0).toFixed(2)} / $${Number(mkt.current_high || 0).toFixed(2)}</span></div>`}
         ${financialBlockHtml}
-        ${aiFailureNotice}
 
         <div class="eval-section-title">
           <span>LISTING STUDIO · eBay DRAFT</span>
           <div style="display:flex; gap:6px;">
-            <button type="button" class="btn-mini" onclick="copyListingField_('title', 'evalStatusBox')">제목 복사</button>
-            <button type="button" class="btn-mini" onclick="copyListingField_('desc', 'evalStatusBox')">설명 복사</button>
+            <button type="button" class="btn-mini" onclick="copyListingField_('title', 'evalStatusBox')">${t("copyTitleShort")}</button>
+            <button type="button" class="btn-mini" onclick="copyListingField_('desc', 'evalStatusBox')">${t("copyDescShort")}</button>
           </div>
         </div>
-        <div class="listing-box"><b>Title:</b> ${listingTitleText}\n\n<b>Description:</b>\n${listingDescText}</div>
+        <div class="listing-box"><b>Title:</b> ${escapeHtml_(lst.title || "-")}\n\n<b>Description:</b>\n${escapeHtml_(lst.description || "-")}</div>
       `;
     }
 
     async function saveUpcResultToSheet() {
-      if (!latestUpcEvalSnapshot) {
-        setEvalLog("❌ 저장할 AI 평가 결과가 없습니다.");
-        return;
-      }
+      if (!latestUpcEvalSnapshot) return;
       const btn = document.getElementById("saveSheetBtn");
-      if (btn) {
-        btn.disabled = true;
-        btn.textContent = "⏳ 시트 저장 중...";
-      }
+      if (btn) { btn.disabled = true; btn.textContent = t("savingSheet"); }
       try {
         const res = await postToGas_(latestUpcEvalSnapshot);
-        if (!res || !res.success) {
-          throw new Error(res && res.error ? res.error : "시트 저장에 실패했습니다.");
-        }
-        setEvalLog(`✅ Google Sheets(${res.sheetName || "Mobile_AI_Appraisals"}) 저장 완료 (${res.savedAt || ""})`);
-        if (btn) btn.textContent = "✓ 시트 저장 완료";
+        if (!res || !res.success) throw new Error(res && res.error ? res.error : "Save failed.");
+        setEvalLog(`✅ Saved to ${res.sheetName || "Mobile_AI_Appraisals"} (${res.savedAt || ""})`);
+        if (btn) btn.textContent = t("savedSheet");
       } catch (err) {
-        const msg = err && err.message ? err.message : String(err);
-        setEvalLog("❌ 시트 저장 실패: " + msg);
-        if (btn) {
-          btn.disabled = false;
-          btn.textContent = "💾 Google Sheets에 저장";
-        }
+        setEvalLog("❌ " + (err && err.message ? err.message : err));
+        if (btn) { btn.disabled = false; btn.textContent = t("saveSheetBtn"); }
       }
     }
 
-    // 실시간 UPC 스캐너 (기존 동작 그대로 유지)
     function getSupportedUpcFormats() {
       if (typeof Html5QrcodeSupportedFormats === "undefined") return undefined;
-      return [
-        Html5QrcodeSupportedFormats.UPC_A,
-        Html5QrcodeSupportedFormats.UPC_E,
-        Html5QrcodeSupportedFormats.EAN_13,
-        Html5QrcodeSupportedFormats.EAN_8
-      ];
+      return [Html5QrcodeSupportedFormats.UPC_A, Html5QrcodeSupportedFormats.UPC_E, Html5QrcodeSupportedFormats.EAN_13, Html5QrcodeSupportedFormats.EAN_8];
     }
 
     async function startUpcScanner() {
-      if (typeof Html5Qrcode === "undefined") {
-        setLog("❌ 바코드 스캐너 라이브러리를 불러오지 못했습니다. 페이지를 새로고침해 주세요.");
-        return;
-      }
-
+      if (typeof Html5Qrcode === "undefined") { setLog("❌ Scanner library failed to load."); return; }
       await stopUpcScanner();
-
       isScanLocked = false;
       hideResultCard();
       document.getElementById("scannerWrapper").style.display = "block";
-      setLog("⏳ 카메라 권한 확인 및 실시간 스캐너 실행 중...");
+      setLog(currentLang === "ko" ? "⏳ 카메라 실행 중..." : "⏳ Starting camera...");
 
       const formats = getSupportedUpcFormats();
-      const configObj = formats
-        ? { formatsToSupport: formats, experimentalFeatures: { useBarCodeDetectorIfSupported: true } }
-        : { experimentalFeatures: { useBarCodeDetectorIfSupported: true } };
+      const configObj = formats ? { formatsToSupport: formats, experimentalFeatures: { useBarCodeDetectorIfSupported: true } } : { experimentalFeatures: { useBarCodeDetectorIfSupported: true } };
 
       try {
         upcScannerInstance = new Html5Qrcode("upc-reader", configObj);
-        const scanConfig = {
-          fps: 15,
-          qrbox: function(viewfinderWidth, viewfinderHeight) {
-            const boxWidth = Math.min(480, Math.max(260, Math.floor(viewfinderWidth * 0.94)));
-            const boxHeight = Math.max(120, Math.min(155, Math.floor(viewfinderHeight * 0.46)));
-            return { width: boxWidth, height: boxHeight };
-          },
-          aspectRatio: 1.333333
-        };
-
         await upcScannerInstance.start(
           { facingMode: "environment" },
-          scanConfig,
+          {
+            fps: 15,
+            qrbox: function(w, h) { return { width: Math.min(480, Math.max(260, Math.floor(w * 0.94))), height: Math.max(120, Math.min(155, Math.floor(h * 0.46))) }; },
+            aspectRatio: 1.333333
+          },
           onUpcDecoded,
           function() {}
         );
-        setLog("✅ 실시간 카메라 실행 중 (골드 프레임 안에 바코드를 맞추세요)");
+        setLog(currentLang === "ko" ? "✅ 카메라 실행 중 (골드 프레임 안에 바코드를 맞추세요)" : "✅ Camera active — align barcode in gold frame");
       } catch (err) {
-        const detail = err && (err.name || err.message) ? `${err.name ? err.name + ": " : ""}${err.message || err}` : "카메라 접근 거부 또는 오류";
         await stopUpcScanner();
-        setLog("❌ 카메라 실행 실패: " + detail);
+        setLog("❌ Camera error: " + (err && err.message ? err.message : err));
       }
     }
 
     async function stopUpcScanner() {
       const wrapper = document.getElementById("scannerWrapper");
       if (wrapper) wrapper.style.display = "none";
-
       if (upcScannerInstance) {
         const ref = upcScannerInstance;
         upcScannerInstance = null;
@@ -1532,72 +1442,53 @@
 
     async function onUpcDecoded(decodedText) {
       const cleaned = String(decodedText || "").replace(/[^0-9]/g, "").trim();
-      if (!cleaned) return;
-      if (isScanLocked) return;
-      if (cleaned === lastScannedUpc) return;
-
+      if (!cleaned || isScanLocked || cleaned === lastScannedUpc) return;
       isScanLocked = true;
       lastScannedUpc = cleaned;
-
       document.getElementById("upcValueInput").value = cleaned;
-      setLog("🎯 UPC 인식 완료: " + cleaned + "\n⏹ 카메라 자동 정지 중...");
-
+      setLog("🎯 UPC: " + cleaned);
       await stopUpcScanner();
       await triggerAutoUpcLookup(cleaned);
-
       if (cooldownTimer) clearTimeout(cooldownTimer);
-      cooldownTimer = setTimeout(function() {
-        lastScannedUpc = "";
-        isScanLocked = false;
-      }, 2500);
+      cooldownTimer = setTimeout(function() { lastScannedUpc = ""; isScanLocked = false; }, 2500);
     }
 
     async function triggerAutoUpcLookup(upcCode) {
-      setLog("⏳ Resellpro 백엔드로 UPC(" + upcCode + ") 조회 요청 중...");
+      setLog(currentLang === "ko" ? "⏳ UPC(" + upcCode + ") 조회 중..." : "⏳ Looking up UPC (" + upcCode + ")...");
       try {
-        const data = await postToGas_({
-          action: "lookupBarcode",
-          code: upcCode
-        });
-        if (!data || !data.success) {
-          throw new Error(data && data.error ? data.error : "UPC 조회에 실패했습니다.");
-        }
-        setLog("✅ 조회 완료 (UPC: " + upcCode + ")");
+        const data = await postToGas_({ action: "lookupBarcode", code: upcCode });
+        if (!data || !data.success) throw new Error(data && data.error ? data.error : "Lookup failed.");
+        setLog("✅ UPC Lookup Complete (" + upcCode + ")");
         renderUpcResult(upcCode, data.product);
       } catch (err) {
         hideResultCard();
-        const errMsg = err && err.message ? err.message : String(err);
-        setLog("❌ 조회 오류: " + errMsg);
+        setLog("❌ " + (err && err.message ? err.message : err));
       }
     }
 
     // ==========================================
-    // MODE 3: STORAGE AUCTION ANALYZER
+    // MODE 3: STORAGE AUCTION
     // ==========================================
     async function onStoragePhotosSelected(input) {
       const files = Array.from(input.files || []).slice(0, 5);
       if (files.length < 1) return;
-
       const statusEl = document.getElementById("storageStatusBox");
       const thumbsEl = document.getElementById("storageThumbs");
-      statusEl.textContent = `⏳ 스토리지 사진 ${files.length}장 최적화 중...`;
+      statusEl.textContent = `⏳ Optimizing ${files.length} photo(s)...`;
       thumbsEl.innerHTML = "";
       selectedStorageImages = [];
 
       try {
         for (let i = 0; i < files.length; i++) {
           const comp = await compressImageFile_(files[i], 960, 0.72);
-          selectedStorageImages.push({
-            data: comp.base64,
-            mimeType: comp.mimeType
-          });
+          selectedStorageImages.push({ data: comp.base64, mimeType: comp.mimeType });
           const img = document.createElement("img");
           img.src = comp.dataUrl;
           thumbsEl.appendChild(img);
         }
-        statusEl.textContent = `✅ 사진 ${selectedStorageImages.length}장 준비 완료! [Analyze Unit & Calculate MAX BID]를 누르세요.`;
+        statusEl.textContent = `✅ ${selectedStorageImages.length} photo(s) ready!`;
       } catch (err) {
-        statusEl.textContent = "❌ 사진 처리 오류: " + (err.message || err);
+        statusEl.textContent = "❌ " + (err.message || err);
       }
     }
 
@@ -1605,7 +1496,7 @@
       const statusEl = document.getElementById("storageStatusBox");
       const card = document.getElementById("storageResultCard");
       if (selectedStorageImages.length < 1) {
-        statusEl.textContent = "❌ 스토리지 사진을 최소 1장 이상 선택해 주세요.";
+        statusEl.textContent = currentLang === "ko" ? "❌ 스토리지 사진을 최소 1장 이상 선택해 주세요." : "❌ Please select at least 1 storage photo.";
         return;
       }
 
@@ -1614,26 +1505,18 @@
       btn.disabled = true;
       card.style.display = "none";
       card.innerHTML = "";
-      statusEl.textContent = "⏳ 스토리지 유닛 자산 식별 · 품목별 eBay 시세 연동 · 시트 자동 기록 중...";
+      statusEl.textContent = currentLang === "ko" ? "⏳ 스토리지 자산 분석 및 시트 저장 중..." : "⏳ Analyzing storage unit & saving to Sheets...";
 
       try {
-        const res = await postToGas_({
-          action: "analyzeStorageUnit",
-          images: selectedStorageImages,
-          currentBid: isFinite(bidVal) && bidVal > 0 ? bidVal : 0
-        });
-
-        if (!res || !res.success || !res.data) {
-          throw new Error(res && res.error ? res.error : "스토리지 분석 응답이 올바르지 않습니다.");
-        }
-
-        statusEl.textContent = "✅ 스토리지 분석 완료 (Storage_Auction_Analysis 시트 자동 저장됨)";
+        const res = await postToGas_({ action: "analyzeStorageUnit", images: selectedStorageImages, currentBid: isFinite(bidVal) && bidVal > 0 ? bidVal : 0 });
+        if (!res || !res.success || !res.data) throw new Error(res && res.error ? res.error : "Storage analysis failed.");
+        statusEl.textContent = "✅ Storage Analysis Complete (Auto-saved to Sheets)";
         renderStorageResult_(res.data);
       } catch (err) {
         const msg = err && err.message ? err.message : String(err);
-        statusEl.textContent = "❌ 스토리지 분석 실패: " + msg;
+        statusEl.textContent = "❌ " + msg;
         card.style.display = "block";
-        card.innerHTML = `<div class="alert-box">스토리지 분석 오류\n${escapeHtml_(msg)}</div>`;
+        card.innerHTML = `<div class="alert-box">${escapeHtml_(msg)}</div>`;
       } finally {
         btn.disabled = false;
       }
@@ -1642,10 +1525,8 @@
     function renderStorageResult_(d) {
       const card = document.getElementById("storageResultCard");
       card.style.display = "block";
-
       const decision = String(d.decision || "ENTER BID").toUpperCase();
-      let bannerCls = "maybe";
-      let pillBg = "var(--status-maybe)";
+      let bannerCls = "maybe", pillBg = "var(--status-maybe)";
       if (decision === "BID NOW") { bannerCls = "buy"; pillBg = "var(--status-buy)"; }
       else if (decision === "PASS") { bannerCls = "pass"; pillBg = "var(--status-pass)"; }
 
@@ -1656,22 +1537,20 @@
             <div class="banner-price tabular">$${Number(d.calculated_max_safe_bid || 0).toFixed(0)}</div>
             <div class="meta-line" style="color:#fff; opacity:0.85;">Grade ${escapeHtml_(d.grade || "B")} · Sheet Auto-Saved</div>
           </div>
-          <div class="banner-decision-pill" style="background:${pillBg};">
-            <div>${escapeHtml_(decision)}</div>
-          </div>
+          <div class="banner-decision-pill" style="background:${pillBg};"><div>${escapeHtml_(decision)}</div></div>
         </div>
 
         <div class="eval-section-title"><span>UNIT FINANCIAL SUMMARY</span></div>
-        <div class="kv-row"><span class="kv-label">예상 총 매출 (Gross Value)</span><span class="kv-val tabular" style="color:var(--accent-gold-bright);">$${Number(d.ai_est_total_value || 0).toFixed(0)}</span></div>
-        <div class="kv-row"><span class="kv-label">현재 입찰가 (Current Bid)</span><span class="kv-val tabular">$${Number(d.current_bid || 0).toFixed(0)}</span></div>
-        <div class="kv-row"><span class="kv-label">예상 폐기비 (Disposal)</span><span class="kv-val tabular">$${Number(d.ai_est_disposal_cost || 0).toFixed(0)}</span></div>
+        <div class="kv-row"><span class="kv-label">Est. Gross Value</span><span class="kv-val tabular" style="color:var(--accent-gold-bright);">$${Number(d.ai_est_total_value || 0).toFixed(0)}</span></div>
+        <div class="kv-row"><span class="kv-label">Current Bid</span><span class="kv-val tabular">$${Number(d.current_bid || 0).toFixed(0)}</span></div>
+        <div class="kv-row"><span class="kv-label">Est. Disposal Cost</span><span class="kv-val tabular">$${Number(d.ai_est_disposal_cost || 0).toFixed(0)}</span></div>
 
         <div class="eval-section-title"><span>IDENTIFIED KEY ASSETS</span></div>
-        <div class="listing-box">${escapeHtml_(d.key_assets || "식별된 품목 없음")}</div>
+        <div class="listing-box">${escapeHtml_(d.key_assets || "-")}</div>
 
         <div class="eval-section-title"><span>RISK & STRATEGY MEMO</span></div>
-        <div class="meta-line" style="color:var(--status-maybe);">⚠️ 폐기물/리스크: ${escapeHtml_(d.risks_trash || "-")}</div>
-        <div class="meta-line" style="color:var(--text-primary); margin-top:6px;">💡 전략 메모: ${escapeHtml_(d.strategy_memo || "-")}</div>
+        <div class="meta-line" style="color:var(--status-maybe);">⚠️ ${escapeHtml_(d.risks_trash || "-")}</div>
+        <div class="meta-line" style="color:var(--text-primary); margin-top:6px;">💡 ${escapeHtml_(d.strategy_memo || "-")}</div>
       `;
     }
   </script>
