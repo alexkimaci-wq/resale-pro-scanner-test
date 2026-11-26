@@ -2,37 +2,280 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <title>RESALE PRO - UPC Scanner & AI Evaluation (Stage 4-2)</title>
+  <title>Resellpro - Smarter Sourcing. Greater Profits.</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
   <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
   <style>
     :root {
-      --bg: #07111f; --card: #0e1c30; --border: #1e3352;
-      --primary: #1e88e5; --accent: #00e5ff; --text: #e6f1ff;
-      --sub: #8b9bb4; --buy: #25d695; --maybe: #ffc857; --pass: #ff5d6c;
+      --bg-primary: #06080D;
+      --bg-surface: #0D131E;
+      --bg-elevated: #141D2D;
+      --border-subtle: #202C40;
+      --border-gold: rgba(212, 175, 55, 0.42);
+      --accent-gold: #D4AF37;
+      --accent-gold-bright: #F0CE6B;
+      --accent-gold-soft: rgba(212, 175, 55, 0.14);
+      --text-primary: #F8FAFC;
+      --text-secondary: #94A3B8;
+      --text-muted: #64748B;
+      --status-buy: #10B981;
+      --status-maybe: #F59E0B;
+      --status-pass: #EF4444;
     }
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-    body { background: var(--bg); color: var(--text); padding: 12px; max-width: 520px; margin: 0 auto; }
 
-    /* 최상단 카메라 스캐너 영역 */
-    .top-scanner-card {
-      background: var(--card);
-      border: 1px solid var(--border);
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    body {
+      background: radial-gradient(circle at top center, #141926 0%, #06080D 52%);
+      color: var(--text-primary);
+      padding: 14px 16px 36px;
+      max-width: 520px;
+      margin: 0 auto;
+      min-height: 100vh;
+    }
+
+    .tabular { font-variant-numeric: tabular-nums; }
+
+    /* 상단 RESELLPRO 브랜드 헤더 */
+    .brand-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 4px 2px 14px;
+    }
+    .brand-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .brand-mark {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background: linear-gradient(145deg, rgba(212,175,55,0.22), rgba(212,175,55,0.04));
+      border: 1px solid var(--border-gold);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--accent-gold-bright);
+      font-size: 18px;
+      font-weight: 900;
+      box-shadow: 0 0 18px rgba(212, 175, 55, 0.18);
+    }
+    .brand-wordmark {
+      font-size: 20px;
+      font-weight: 800;
+      letter-spacing: 2.2px;
+      color: var(--text-primary);
+      line-height: 1.1;
+    }
+    .brand-wordmark span { color: var(--accent-gold-bright); }
+    .brand-tagline {
+      font-size: 10.5px;
+      color: var(--text-secondary);
+      margin-top: 2px;
+      letter-spacing: 0.3px;
+    }
+    .brand-pill {
+      background: var(--accent-gold-soft);
+      border: 1px solid var(--border-gold);
+      color: var(--accent-gold-bright);
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 0.7px;
+      padding: 5px 10px;
+      border-radius: 999px;
+      text-transform: uppercase;
+    }
+
+    /* 3대 핵심 진입 허브 (Take a Photo + UPC + Storage) */
+    .hub-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+    .hub-card {
+      position: relative;
+      background: linear-gradient(160deg, #131B2A 0%, #0B1019 100%);
+      border: 1px solid var(--border-subtle);
       border-radius: 16px;
-      padding: 12px;
+      padding: 14px;
+      text-align: left;
+      color: var(--text-primary);
+      cursor: pointer;
+      transition: all 0.18s ease;
+    }
+    .hub-card.hero-photo {
+      grid-column: 1 / -1;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 18px;
+      background: radial-gradient(circle at 20% 20%, rgba(212, 175, 55, 0.18), rgba(13, 19, 30, 0.96) 65%);
+      border: 1px solid var(--border-gold);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(240, 206, 107, 0.2);
+    }
+    .hub-card.active {
+      border-color: var(--accent-gold-bright);
+      box-shadow: 0 0 0 1px var(--accent-gold), 0 8px 22px rgba(212, 175, 55, 0.18);
+    }
+    .hub-icon {
+      font-size: 22px;
+      margin-bottom: 6px;
+      display: block;
+    }
+    .hub-card.hero-photo .hub-icon {
+      font-size: 28px;
+      margin-bottom: 0;
+    }
+    .hub-title {
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--text-primary);
+    }
+    .hub-card.hero-photo .hub-title {
+      font-size: 16px;
+      color: var(--accent-gold-bright);
+    }
+    .hub-sub {
+      font-size: 11px;
+      color: var(--text-secondary);
+      margin-top: 3px;
+      line-height: 1.35;
+    }
+    .hub-arrow {
+      width: 28px;
+      height: 28px;
+      border-radius: 999px;
+      background: var(--accent-gold-soft);
+      border: 1px solid var(--border-gold);
+      color: var(--accent-gold-bright);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      flex-shrink: 0;
+    }
+
+    /* 모드 패널 */
+    .mode-panel { display: none; }
+    .mode-panel.active { display: block; }
+
+    /* 공통 카드 & 폼 */
+    .card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: 16px;
+      padding: 16px;
       margin-bottom: 12px;
     }
+    .card.gold-edge {
+      border-color: var(--border-gold);
+      box-shadow: 0 6px 24px rgba(0, 0, 0, 0.35);
+    }
+    .section-kicker {
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.9px;
+      text-transform: uppercase;
+      color: var(--accent-gold-bright);
+      margin-bottom: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .label {
+      font-size: 12px;
+      color: var(--text-secondary);
+      margin-bottom: 6px;
+      display: block;
+      font-weight: 600;
+    }
+    .input {
+      width: 100%;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-primary);
+      padding: 12px 14px;
+      border-radius: 12px;
+      font-size: 15px;
+      outline: none;
+    }
+    .input:focus { border-color: var(--accent-gold); }
+    .input::placeholder { color: var(--text-muted); }
+
+    /* 버튼 */
+    .btn-row { display: flex; gap: 8px; }
+    .btn-gold {
+      flex: 1;
+      height: 50px;
+      background: linear-gradient(135deg, #E8C55E 0%, #C89F2B 100%);
+      border: none;
+      color: #06080D;
+      padding: 0 16px;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+    .btn-gold:disabled { opacity: 0.5; cursor: not-allowed; }
+    .btn-secondary {
+      height: 50px;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-primary);
+      padding: 0 14px;
+      border-radius: 12px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .btn-sheet-save {
+      flex: 1;
+      height: 44px;
+      background: rgba(16, 185, 129, 0.16);
+      border: 1px solid rgba(16, 185, 129, 0.5);
+      color: #6EE7B7;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+    .btn-sheet-save:disabled { opacity: 0.6; cursor: not-allowed; }
+    .btn-mini {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-subtle);
+      color: var(--accent-gold-bright);
+      font-size: 11px;
+      font-weight: 700;
+      padding: 5px 10px;
+      border-radius: 8px;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    /* 카메라 스캐너 영역 */
     .scanner-wrapper {
       display: none;
       position: relative;
       margin-bottom: 12px;
       border-radius: 14px;
       overflow: hidden;
-      border: 1px solid var(--border);
+      border: 1px solid var(--border-gold);
       background: #000;
     }
-    #upc-reader { width: 100%; min-height: 310px; }
-    #upc-reader video { width: 100% !important; height: 310px !important; object-fit: cover !important; display: block; }
+    #upc-reader { width: 100%; min-height: 300px; }
+    #upc-reader video { width: 100% !important; height: 300px !important; object-fit: cover !important; display: block; }
     .upc-frame-overlay {
       pointer-events: none;
       position: absolute;
@@ -44,100 +287,214 @@
       z-index: 5;
     }
     .upc-frame-box {
-      width: 96%;
-      height: 145px;
-      border: 3px solid #25d695;
+      width: 94%;
+      height: 142px;
+      border: 2.5px solid var(--accent-gold-bright);
       border-radius: 12px;
-      box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.36), 0 0 16px rgba(37, 214, 149, 0.7);
+      box-shadow: 0 0 0 9999px rgba(6, 8, 13, 0.45), 0 0 18px rgba(212, 175, 55, 0.5);
       background: transparent;
     }
     .upc-frame-hint {
       position: relative;
-      margin-top: 8px;
+      margin-top: 10px;
       font-size: 11px;
       font-weight: 700;
-      color: #25d695;
-      background: rgba(7, 17, 31, 0.88);
-      padding: 4px 10px;
+      color: var(--accent-gold-bright);
+      background: rgba(6, 8, 13, 0.9);
+      border: 1px solid var(--border-gold);
+      padding: 4px 12px;
       border-radius: 999px;
     }
 
-    .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-    .title { font-size: 20px; font-weight: 800; color: #fff; }
-    .subtitle { font-size: 11px; color: var(--sub); margin-top: 2px; }
-    .badge { background: rgba(37, 214, 149, 0.12); border: 1px solid rgba(37, 214, 149, 0.4); color: var(--buy); font-size: 11px; padding: 5px 10px; border-radius: 20px; font-weight: 700; }
-    .card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 16px; margin-bottom: 12px; }
-    .label { font-size: 12px; color: var(--sub); margin-bottom: 6px; display: block; font-weight: 600; }
-    .input { width: 100%; background: #081322; border: 1px solid var(--border); color: #fff; padding: 12px 14px; border-radius: 12px; font-size: 15px; outline: none; }
-    .btn-row { display: flex; gap: 8px; }
-    .btn-primary { flex: 1; background: linear-gradient(135deg, #2b98f0, #1565c0); border: none; color: #fff; padding: 13px; border-radius: 12px; font-size: 14px; font-weight: 800; cursor: pointer; }
-    .btn-secondary { background: #162842; border: 1px solid var(--border); color: #fff; padding: 13px 14px; border-radius: 12px; font-size: 13px; font-weight: 700; cursor: pointer; }
-    .status-box {
-      background: #081322;
-      border: 1px solid var(--border);
+    /* 사진 업로드/미리보기 영역 */
+    .photo-dropzone {
+      border: 1.5px dashed var(--border-gold);
+      background: radial-gradient(circle at center, rgba(212,175,55,0.08), rgba(6,8,13,0.9));
+      border-radius: 14px;
+      padding: 20px 14px;
+      text-align: center;
+      cursor: pointer;
+    }
+    .photo-preview-img {
+      width: 100%;
+      max-height: 240px;
+      object-fit: contain;
       border-radius: 12px;
-      padding: 12px;
-      font-size: 13px;
+      background: #000;
+      display: none;
+      margin-bottom: 10px;
+      border: 1px solid var(--border-subtle);
+    }
+    .storage-thumbs {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 6px;
+      margin-top: 10px;
+    }
+    .storage-thumbs img {
+      width: 100%;
+      height: 58px;
+      object-fit: cover;
+      border-radius: 8px;
+      border: 1px solid var(--border-gold);
+    }
+
+    /* 상태 박스 & 결과 카드 */
+    .status-box {
+      background: var(--bg-primary);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      padding: 11px 12px;
+      font-size: 12.5px;
       line-height: 1.5;
-      color: var(--sub);
+      color: var(--text-secondary);
       margin-top: 12px;
       white-space: pre-line;
     }
     .result-card {
       display: none;
       margin-top: 12px;
-      background: #081322;
-      border: 1px solid rgba(0, 229, 255, 0.35);
-      border-radius: 12px;
+      background: var(--bg-primary);
+      border: 1px solid var(--border-subtle);
+      border-radius: 14px;
       padding: 14px;
       font-size: 13px;
     }
     .result-flex { display: flex; gap: 12px; align-items: flex-start; }
-    .result-thumb { width: 64px; height: 64px; object-fit: contain; background: #fff; border-radius: 8px; padding: 3px; flex-shrink: 0; }
-    .meta-line { color: var(--sub); font-size: 12px; margin-top: 4px; line-height: 1.45; }
+    .result-thumb {
+      width: 72px;
+      height: 72px;
+      object-fit: contain;
+      background: #fff;
+      border-radius: 10px;
+      padding: 4px;
+      flex-shrink: 0;
+    }
+    .meta-line {
+      color: var(--text-secondary);
+      font-size: 12px;
+      margin-top: 4px;
+      line-height: 1.45;
+    }
     .edit-box {
       margin-top: 14px;
       padding-top: 12px;
-      border-top: 1px solid var(--border);
+      border-top: 1px solid var(--border-subtle);
     }
-    .edit-grid {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 10px;
-      margin-top: 8px;
-    }
-    .edit-note {
-      font-size: 11px;
-      color: var(--sub);
-      margin-top: 4px;
-    }
+    .edit-grid { display: grid; grid-template-columns: 1fr; gap: 10px; margin-top: 8px; }
+    .edit-note { font-size: 11px; color: var(--text-muted); margin-top: 4px; line-height: 1.4; }
 
-    /* 4-2 AI Evaluation 스타일 */
+    /* 상품 상태 칩 */
     .cond-group { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
     .cond-chip {
-      background: #081322;
-      border: 1px solid var(--border);
-      color: var(--sub);
-      padding: 8px 11px;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-secondary);
+      padding: 9px 12px;
       border-radius: 999px;
       font-size: 12px;
       font-weight: 700;
       cursor: pointer;
     }
     .cond-chip.active {
-      background: rgba(0, 229, 255, 0.16);
-      border-color: var(--accent);
-      color: #fff;
+      background: var(--accent-gold-soft);
+      border-color: var(--accent-gold-bright);
+      color: var(--accent-gold-bright);
     }
-    .eval-section-title {
-      font-size: 12px;
+
+    /* 시안 스타일 Recommended Max Buy Price 배너 */
+    .max-buy-banner {
+      border-radius: 14px;
+      padding: 14px 16px;
+      margin: 12px 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+    }
+    .max-buy-banner.buy {
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.25), rgba(6, 78, 59, 0.55));
+      border: 1px solid rgba(16, 185, 129, 0.65);
+    }
+    .max-buy-banner.maybe {
+      background: linear-gradient(135deg, rgba(245, 158, 11, 0.24), rgba(120, 53, 15, 0.5));
+      border: 1px solid rgba(245, 158, 11, 0.65);
+    }
+    .max-buy-banner.pass {
+      background: linear-gradient(135deg, rgba(239, 68, 68, 0.22), rgba(127, 29, 29, 0.5));
+      border: 1px solid rgba(239, 68, 68, 0.6);
+    }
+    .banner-kicker {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-primary);
+      opacity: 0.9;
+    }
+    .banner-price {
+      font-size: 30px;
+      font-weight: 900;
+      color: #fff;
+      line-height: 1.1;
+      margin-top: 2px;
+    }
+    .banner-decision-pill {
+      padding: 8px 14px;
+      border-radius: 10px;
+      text-align: center;
+      color: #06080D;
+      font-weight: 900;
+      font-size: 16px;
+      min-width: 96px;
+    }
+    .banner-roi {
+      font-size: 11px;
       font-weight: 800;
-      color: var(--accent);
-      letter-spacing: 0.4px;
+      margin-top: 2px;
+    }
+
+    /* 신뢰도 프로그레스 바 */
+    .conf-bar-wrap {
+      width: 100%;
+      height: 6px;
+      background: var(--bg-elevated);
+      border-radius: 999px;
+      overflow: hidden;
+      margin-top: 6px;
+    }
+    .conf-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent-gold), var(--status-buy));
+      border-radius: 999px;
+    }
+
+    /* 마켓 시세 골드 카드 */
+    .market-gold-card {
+      background: linear-gradient(160deg, rgba(212,175,55,0.1), rgba(13,19,30,0.95));
+      border: 1px solid var(--border-gold);
+      border-radius: 14px;
+      padding: 13px 14px;
+      margin-top: 10px;
+    }
+    .market-big-price {
+      font-size: 26px;
+      font-weight: 900;
+      color: var(--accent-gold-bright);
+      margin-top: 3px;
+    }
+
+    .eval-section-title {
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--accent-gold-bright);
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
       margin-top: 14px;
       margin-bottom: 6px;
-      padding-bottom: 4px;
-      border-bottom: 1px solid var(--border);
+      padding-bottom: 5px;
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
     .kv-row {
       display: flex;
@@ -147,19 +504,13 @@
       padding: 5px 0;
       font-size: 13px;
     }
-    .kv-label { color: var(--sub); font-size: 12px; }
-    .kv-val { color: #fff; font-weight: 700; text-align: right; }
-    .decision-box {
-      padding: 12px;
-      border-radius: 12px;
-      margin-top: 8px;
-      color: #06101e;
-      font-weight: 900;
-    }
+    .kv-label { color: var(--text-secondary); font-size: 12px; }
+    .kv-val { color: var(--text-primary); font-weight: 700; text-align: right; }
+
     .alert-box {
-      background: rgba(255, 93, 108, 0.12);
-      border: 1px solid rgba(255, 93, 108, 0.45);
-      color: #ffd6da;
+      background: rgba(239, 68, 68, 0.12);
+      border: 1px solid rgba(239, 68, 68, 0.45);
+      color: #FECACA;
       border-radius: 10px;
       padding: 10px 12px;
       font-size: 12px;
@@ -168,9 +519,9 @@
       white-space: pre-line;
     }
     .warn-box {
-      background: rgba(255, 200, 87, 0.12);
-      border: 1px solid rgba(255, 200, 87, 0.45);
-      color: #ffe8b3;
+      background: rgba(245, 158, 11, 0.12);
+      border: 1px solid rgba(245, 158, 11, 0.45);
+      color: #FDE68A;
       border-radius: 10px;
       padding: 10px 12px;
       font-size: 12px;
@@ -179,54 +530,140 @@
       white-space: pre-line;
     }
     .listing-box {
-      background: #0e1c30;
-      border: 1px solid var(--border);
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
       border-radius: 10px;
       padding: 10px 12px;
       margin-top: 6px;
       font-size: 12px;
       line-height: 1.5;
+      color: var(--text-primary);
       white-space: pre-line;
     }
+
+    details.settings-drawer {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: 14px;
+      padding: 12px 14px;
+      margin-top: 8px;
+    }
+    details.settings-drawer summary {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-secondary);
+      cursor: pointer;
+      list-style: none;
+    }
+    details.settings-drawer summary::-webkit-details-marker { display: none; }
   </style>
 </head>
 <body>
-  <div class="top-scanner-card">
-    <div id="scannerWrapper" class="scanner-wrapper">
-      <div id="upc-reader"></div>
-      <div class="upc-frame-overlay">
-        <div class="upc-frame-box"></div>
-        <div class="upc-frame-hint">큰 초록색 프레임 안에 바코드를 맞추세요</div>
+  <!-- 상단 RESELLPRO 브랜드 헤더 -->
+  <div class="brand-header">
+    <div class="brand-left">
+      <div class="brand-mark">↗</div>
+      <div>
+        <div class="brand-wordmark">RESELL<span>PRO</span></div>
+        <div class="brand-tagline">Smarter Sourcing. Greater Profits.</div>
       </div>
     </div>
+    <div class="brand-pill">PRO AI</div>
+  </div>
 
-    <div class="btn-row">
-      <button type="button" id="startScanBtn" class="btn-primary" onclick="startUpcScanner()">📷 실시간 UPC 스캔 시작</button>
-      <button type="button" id="stopScanBtn" class="btn-secondary" onclick="stopUpcScanner()">⏹ 카메라 정지</button>
+  <!-- 3대 핵심 진입 허브 -->
+  <div class="hub-grid">
+    <button type="button" id="hubPhotoBtn" class="hub-card hero-photo active" onclick="switchMode('photo')">
+      <div style="display:flex; align-items:center; gap:12px;">
+        <span class="hub-icon">📷</span>
+        <div>
+          <div class="hub-title">Take a Photo · AI Scan</div>
+          <div class="hub-sub">사진 한 장으로 상품 식별 · 시세 · 최대 매입가 분석</div>
+        </div>
+      </div>
+      <div class="hub-arrow">›</div>
+    </button>
+
+    <button type="button" id="hubUpcBtn" class="hub-card" onclick="switchMode('upc')">
+      <span class="hub-icon">║▌</span>
+      <div class="hub-title">Scan UPC Barcode</div>
+      <div class="hub-sub">실시간 바코드 1초 조회 · AI 평가</div>
+    </button>
+
+    <button type="button" id="hubStorageBtn" class="hub-card" onclick="switchMode('storage')">
+      <span class="hub-icon">📦</span>
+      <div class="hub-title">Storage Auction</div>
+      <div class="hub-sub">유닛 다중 사진 · 안전 입찰가 계산</div>
+    </button>
+  </div>
+
+  <!-- ========================================================= -->
+  <!-- MODE 1: TAKE A PHOTO (AI PHOTO SCAN) -->
+  <!-- ========================================================= -->
+  <div id="panel-photo" class="mode-panel active">
+    <div class="card gold-edge">
+      <div class="section-kicker">
+        <span>AI Photo Intelligence</span>
+        <span style="font-size:10px; color:var(--text-secondary);">Auto-Save to Sheets</span>
+      </div>
+
+      <img id="photoPreview" class="photo-preview-img" alt="preview">
+
+      <div class="photo-dropzone" onclick="document.getElementById('photoFileInput').click()">
+        <div style="font-size:28px; margin-bottom:6px;">📸</div>
+        <div style="font-weight:800; font-size:14px; color:var(--accent-gold-bright);">상품 사진 촬영 또는 앨범 선택</div>
+        <div class="edit-note">바코드가 없는 의류·신발·빈티지·잡화도 AI가 즉시 분석합니다</div>
+      </div>
+      <input type="file" id="photoFileInput" accept="image/*" capture="environment" style="display:none" onchange="onPhotoSelected(this)">
+
+      <div style="margin-top:12px;">
+        <label class="label">Asking Price ($ 매입가, 선택 또는 실제 매입가 입력)</label>
+        <input type="number" id="photoAskingInput" class="input tabular" step="0.01" min="0" inputmode="decimal" placeholder="예: 12.00">
+      </div>
+
+      <div class="btn-row" style="margin-top:12px;">
+        <button type="button" id="runPhotoBtn" class="btn-gold" onclick="runPhotoAnalysis()">✨ AI 사진 분석 실행</button>
+      </div>
+
+      <div id="photoStatusBox" class="status-box">대기 중: 상품 사진을 촬영하거나 선택한 뒤 [AI 사진 분석 실행]을 누르세요.</div>
+      <div id="photoResultCard" class="result-card"></div>
     </div>
   </div>
 
-  <div class="header">
-    <div>
-      <div class="title">RESALE PRO SCANNER</div>
-      <div class="subtitle">Step 4-2: UPC Lookup & AI Evaluation</div>
+  <!-- ========================================================= -->
+  <!-- MODE 2: SCAN UPC BARCODE (4-1 + 4-2 + 4-3 시트 저장) -->
+  <!-- ========================================================= -->
+  <div id="panel-upc" class="mode-panel">
+    <div class="card gold-edge">
+      <div class="section-kicker"><span>01 · Real-Time UPC Scanner</span></div>
+
+      <div id="scannerWrapper" class="scanner-wrapper">
+        <div id="upc-reader"></div>
+        <div class="upc-frame-overlay">
+          <div class="upc-frame-box"></div>
+          <div class="upc-frame-hint">골드 프레임 안에 UPC 바코드를 맞추세요</div>
+        </div>
+      </div>
+
+      <div class="btn-row">
+        <button type="button" id="startScanBtn" class="btn-gold" onclick="startUpcScanner()">📷 실시간 UPC 스캔 시작</button>
+        <button type="button" id="stopScanBtn" class="btn-secondary" onclick="stopUpcScanner()">정지</button>
+      </div>
+
+      <div style="margin-top:12px;">
+        <label class="label">스캔된 UPC / GTIN 코드</label>
+        <input type="text" id="upcValueInput" class="input tabular" placeholder="스캔 시 바코드 번호가 자동 입력됩니다" readonly>
+      </div>
+
+      <div id="scannerLog" class="status-box">대기 중: [실시간 UPC 스캔 시작]을 눌러 바코드를 인식하세요.</div>
+      <div id="upcResultCard" class="result-card"></div>
     </div>
-    <div class="badge">● STAGE 4-2 READY</div>
-  </div>
 
-  <div class="card">
-    <label class="label">스캔된 UPC 코드</label>
-    <input type="text" id="upcValueInput" class="input" placeholder="스캔된 UPC 코드가 자동 입력됩니다" readonly>
+    <div class="card">
+      <div class="section-kicker"><span>02 · Profit Intelligence</span></div>
+      <div class="edit-note" style="margin-top:0; margin-bottom:10px;">상품 상태를 선택하고 실제 매입가(Asking Price)를 입력해 매입 적합성을 판단하세요.</div>
 
-    <div id="scannerLog" class="status-box">대기 중: 아래 GAS 웹앱 URL을 확인한 뒤 [실시간 UPC 스캔 시작]을 눌러주세요.</div>
-    <div id="upcResultCard" class="result-card"></div>
-
-    <!-- 4-2 PRODUCT CONDITION & ASKING PRICE -->
-    <div class="edit-box">
-      <div style="color:#fff; font-weight:800; font-size:13px;">RESALE PRO – AI Evaluation</div>
-      <div class="edit-note">상품 상태를 선택하고 실제 매입가(Asking Price)를 입력한 뒤 AI 평가를 실행하세요.</div>
-
-      <div style="margin-top:10px;">
+      <div>
         <label class="label">PRODUCT CONDITION (필수 선택)</label>
         <div id="conditionChips" class="cond-group">
           <button type="button" class="cond-chip" data-cond="New" onclick="selectProductCondition('New')">New</button>
@@ -239,36 +676,336 @@
 
       <div style="margin-top:12px;">
         <label class="label">Asking Price ($ 매입가, 0보다 큰 금액 필수)</label>
-        <input type="number" id="askingPriceInput" class="input" step="0.01" min="0.01" placeholder="예: 15.00">
+        <input type="number" id="askingPriceInput" class="input tabular" step="0.01" min="0.01" inputmode="decimal" placeholder="예: 15.00">
       </div>
 
       <div class="btn-row" style="margin-top:12px;">
-        <button type="button" id="runEvalBtn" class="btn-primary" onclick="runAiEvaluationFromUpc()">🤖 AI 평가 실행</button>
+        <button type="button" id="runEvalBtn" class="btn-gold" onclick="runAiEvaluationFromUpc()">Analyze Profit & Decision</button>
       </div>
 
-      <div id="evalStatusBox" class="status-box">AI 평가 대기 중: UPC 조회 및 상품명/브랜드 확인 후 상태와 매입가($)를 입력해 주세요.</div>
+      <div id="evalStatusBox" class="status-box">분석 대기 중: UPC 조회 및 상품 정보 확인 후 상태와 매입가($)를 입력해 주세요.</div>
       <div id="evalResultCard" class="result-card"></div>
     </div>
   </div>
 
-  <div class="card">
-    <label class="label">GAS Web App Endpoint URL</label>
-    <input type="url" id="gasEndpointUrl" class="input" placeholder="https://script.google.com/macros/s/.../exec" onchange="saveEndpointUrl()">
+  <!-- ========================================================= -->
+  <!-- MODE 3: STORAGE AUCTION ANALYZER -->
+  <!-- ========================================================= -->
+  <div id="panel-storage" class="mode-panel">
+    <div class="card gold-edge">
+      <div class="section-kicker">
+        <span>Storage Unit Auction Analyzer</span>
+        <span style="font-size:10px; color:var(--text-secondary);">Auto-Save to Sheets</span>
+      </div>
+
+      <div class="photo-dropzone" onclick="document.getElementById('storageFilesInput').click()">
+        <div style="font-size:28px; margin-bottom:6px;">📦</div>
+        <div style="font-weight:800; font-size:14px; color:var(--accent-gold-bright);">스토리지 유닛 사진 선택 (최대 5장)</div>
+        <div class="edit-note">품목별 eBay 시세 · 수수료 · 폐기비 · 세금을 반영해 MAX BID를 계산합니다</div>
+      </div>
+      <input type="file" id="storageFilesInput" accept="image/*" multiple style="display:none" onchange="onStoragePhotosSelected(this)">
+      <div id="storageThumbs" class="storage-thumbs"></div>
+
+      <div style="margin-top:12px;">
+        <label class="label">Current Bid ($ 현재 경매가, 선택 입력)</label>
+        <input type="number" id="storageBidInput" class="input tabular" step="1" min="0" inputmode="decimal" placeholder="예: 250">
+      </div>
+
+      <div class="btn-row" style="margin-top:12px;">
+        <button type="button" id="runStorageBtn" class="btn-gold" onclick="runStorageAnalysis()">Analyze Unit & Calculate MAX BID</button>
+      </div>
+
+      <div id="storageStatusBox" class="status-box">대기 중: 스토리지 사진을 1~5장 선택한 뒤 분석을 실행하세요.</div>
+      <div id="storageResultCard" class="result-card"></div>
+    </div>
   </div>
+
+  <!-- 백엔드 연결 설정 (접이식) -->
+  <details class="settings-drawer">
+    <summary>⚙️ Resellpro Backend Endpoint 설정</summary>
+    <div style="margin-top:10px;">
+      <label class="label">GAS Web App Endpoint URL</label>
+      <input type="url" id="gasEndpointUrl" class="input" placeholder="https://script.google.com/macros/s/.../exec" onchange="saveEndpointUrl()">
+    </div>
+  </details>
 
   <script>
     const DEFAULT_GAS_ENDPOINT_URL = "https://script.google.com/macros/s/AKfycbyWGjgPttN5jGM2xfGkTZy6gYZs77_Dq_taJ2ur1-ySqv7xtmu5DwWCFeLTklKdWF4A/exec";
-    const STORAGE_KEY_URL = "RESALE_PRO_GAS_URL";
+    const STORAGE_KEY_URL = "RESELLPRO_GAS_URL";
+    const LEGACY_STORAGE_KEY_URL = "RESALE_PRO_GAS_URL";
 
     let upcScannerInstance = null;
     let isScanLocked = false;
     let lastScannedUpc = "";
     let cooldownTimer = null;
 
-    // 4-2 상태: 상품 상태는 기본값 없이 사용자 선택 우선
     let selectedProductCondition = "";
     let upcLookupState = createEmptyLookupState();
+    let latestListingDraft = { title: "", description: "" };
+    let latestUpcEvalSnapshot = null;
 
+    let selectedPhotoPayload = null;
+    let selectedStorageImages = [];
+
+    // ==========================================
+    // 모드 전환
+    // ==========================================
+    function switchMode(mode) {
+      if (mode !== "upc") {
+        stopUpcScanner();
+      }
+      ["photo", "upc", "storage"].forEach(function(m) {
+        const panel = document.getElementById("panel-" + m);
+        if (panel) panel.classList.toggle("active", m === mode);
+      });
+      document.getElementById("hubPhotoBtn").classList.toggle("active", mode === "photo");
+      document.getElementById("hubUpcBtn").classList.toggle("active", mode === "upc");
+      document.getElementById("hubStorageBtn").classList.toggle("active", mode === "storage");
+    }
+
+    // ==========================================
+    // 공통 유틸리티 & 이미지 압축
+    // ==========================================
+    (function initEndpoint() {
+      const saved = localStorage.getItem(STORAGE_KEY_URL) || localStorage.getItem(LEGACY_STORAGE_KEY_URL) || DEFAULT_GAS_ENDPOINT_URL;
+      if (saved) {
+        document.getElementById("gasEndpointUrl").value = saved;
+        localStorage.setItem(STORAGE_KEY_URL, saved);
+      }
+    })();
+
+    function saveEndpointUrl() {
+      const url = document.getElementById("gasEndpointUrl").value.trim();
+      if (url) {
+        localStorage.setItem(STORAGE_KEY_URL, url);
+      } else {
+        localStorage.removeItem(STORAGE_KEY_URL);
+        localStorage.removeItem(LEGACY_STORAGE_KEY_URL);
+      }
+    }
+
+    function getGasEndpointUrl() {
+      const inputVal = document.getElementById("gasEndpointUrl").value.trim();
+      if (inputVal) {
+        localStorage.setItem(STORAGE_KEY_URL, inputVal);
+        return inputVal;
+      }
+      return DEFAULT_GAS_ENDPOINT_URL.trim();
+    }
+
+    function escapeHtml_(str) {
+      return String(str || "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
+
+    async function postToGas_(payload) {
+      const endpointUrl = getGasEndpointUrl();
+      if (!endpointUrl || !/^https:\/\/script\.google\.com\/macros\/s\/.+\/exec$/i.test(endpointUrl)) {
+        throw new Error("유효한 GAS Web App Endpoint URL을 먼저 설정해 주세요.");
+      }
+
+      const response = await fetch(endpointUrl, {
+        method: "POST",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify(payload)
+      });
+
+      if (!response.ok) {
+        throw new Error("HTTP 상태 오류 (" + response.status + ") — GAS 배포 권한을 확인해 주세요.");
+      }
+
+      const rawText = await response.text();
+      try {
+        return JSON.parse(rawText);
+      } catch (e) {
+        throw new Error("GAS 응답이 JSON 형식이 아닙니다. Apps Script에서 새 버전으로 재배포했는지 확인해 주세요.");
+      }
+    }
+
+    function compressImageFile_(file, maxDim, quality) {
+      return new Promise(function(resolve, reject) {
+        const reader = new FileReader();
+        reader.onload = function(evt) {
+          const img = new Image();
+          img.onload = function() {
+            let w = img.width;
+            let h = img.height;
+            if (w > maxDim || h > maxDim) {
+              if (w >= h) {
+                h = Math.round((h * maxDim) / w);
+                w = maxDim;
+              } else {
+                w = Math.round((w * maxDim) / h);
+                h = maxDim;
+              }
+            }
+            const canvas = document.createElement("canvas");
+            canvas.width = w;
+            canvas.height = h;
+            const ctx = canvas.getContext("2d");
+            ctx.drawImage(img, 0, 0, w, h);
+            const dataUrl = canvas.toDataURL("image/jpeg", quality);
+            resolve({
+              dataUrl: dataUrl,
+              base64: dataUrl.split(",").pop(),
+              mimeType: "image/jpeg"
+            });
+          };
+          img.onerror = function() { reject(new Error("이미지를 읽지 못했습니다.")); };
+          img.src = evt.target.result;
+        };
+        reader.onerror = function() { reject(new Error("파일 읽기에 실패했습니다.")); };
+        reader.readAsDataURL(file);
+      });
+    }
+
+    async function copyListingField_(fieldType, logTargetId) {
+      const text = fieldType === "title" ? latestListingDraft.title : latestListingDraft.description;
+      if (!text) return;
+      const el = document.getElementById(logTargetId || "evalStatusBox");
+      try {
+        await navigator.clipboard.writeText(text);
+        if (el) el.textContent = fieldType === "title" ? "✅ eBay 리스팅 제목 복사 완료" : "✅ eBay 상품 설명 복사 완료";
+      } catch (e) {
+        if (el) el.textContent = "⚠️ 클립보드 복사 실패 — 텍스트를 길게 눌러 복사해 주세요.";
+      }
+    }
+
+    // ==========================================
+    // MODE 1: TAKE A PHOTO (AI PHOTO SCAN)
+    // ==========================================
+    async function onPhotoSelected(input) {
+      const file = input.files && input.files[0];
+      if (!file) return;
+      const statusEl = document.getElementById("photoStatusBox");
+      statusEl.textContent = "⏳ 사진 최적화 중...";
+      try {
+        const compressed = await compressImageFile_(file, 1024, 0.78);
+        selectedPhotoPayload = compressed;
+        const preview = document.getElementById("photoPreview");
+        preview.src = compressed.dataUrl;
+        preview.style.display = "block";
+        statusEl.textContent = "✅ 사진 준비 완료! 매입가($)를 입력하거나 바로 [AI 사진 분석 실행]을 누르세요.";
+      } catch (err) {
+        statusEl.textContent = "❌ 사진 처리 오류: " + (err.message || err);
+      }
+    }
+
+    async function runPhotoAnalysis() {
+      const statusEl = document.getElementById("photoStatusBox");
+      const card = document.getElementById("photoResultCard");
+      if (!selectedPhotoPayload) {
+        statusEl.textContent = "❌ 먼저 상품 사진을 촬영하거나 선택해 주세요.";
+        return;
+      }
+
+      const askVal = Number(document.getElementById("photoAskingInput").value || 0);
+      const btn = document.getElementById("runPhotoBtn");
+      btn.disabled = true;
+      card.style.display = "none";
+      card.innerHTML = "";
+      statusEl.textContent = "⏳ Resellpro Vision AI 분석 · eBay 시세 조회 · Google Sheets 자동 기록 중...";
+
+      try {
+        const res = await postToGas_({
+          action: "analyzePhotoItem",
+          imageBase64: selectedPhotoPayload.base64,
+          mimeType: selectedPhotoPayload.mimeType,
+          askingPrice: isFinite(askVal) && askVal > 0 ? Number(askVal.toFixed(2)) : 0,
+          scannedCode: ""
+        });
+
+        if (!res || !res.success || !res.data) {
+          throw new Error(res && res.error ? res.error : "사진 분석 응답이 올바르지 않습니다.");
+        }
+
+        statusEl.textContent = "✅ AI 사진 분석 완료 (Mobile_AI_Appraisals 시트 자동 저장됨)";
+        renderPhotoAnalysisResult_(res.data);
+      } catch (err) {
+        const msg = err && err.message ? err.message : String(err);
+        statusEl.textContent = "❌ 사진 분석 실패: " + msg;
+        card.style.display = "block";
+        card.innerHTML = `<div class="alert-box">AI 사진 분석 오류\n${escapeHtml_(msg)}</div>`;
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
+    function renderPhotoAnalysisResult_(d) {
+      const card = document.getElementById("photoResultCard");
+      card.style.display = "block";
+
+      const conf = Math.max(0, Math.min(100, Number(d.confidence_score || 0)));
+      const decision = String(d.decision || "PASS").toUpperCase();
+      let bannerCls = "pass";
+      let pillBg = "var(--status-pass)";
+      if (decision === "BUY") { bannerCls = "buy"; pillBg = "var(--status-buy)"; }
+      else if (decision === "MAYBE" || decision === "ENTER PRICE") { bannerCls = "maybe"; pillBg = "var(--status-maybe)"; }
+
+      const agentLst = d.agent && d.agent.listing ? d.agent.listing : null;
+      latestListingDraft = {
+        title: agentLst && agentLst.title ? String(agentLst.title) : String(d.item_name || ""),
+        description: agentLst && agentLst.description ? String(agentLst.description) : String(d.analysis_summary || "")
+      };
+
+      const ebayLive = d.ebay_live_data;
+      const marketRangeHtml = (ebayLive && ebayLive.count > 0)
+        ? `<div class="meta-line tabular">eBay 현재 리스팅 ${ebayLive.count}건 · Low $${Number(ebayLive.min).toFixed(2)} / Avg $${Number(ebayLive.avg).toFixed(2)} / High $${Number(ebayLive.max).toFixed(2)}</div>`
+        : `<div class="meta-line">eBay 현재 리스팅: ${escapeHtml_(d.ebay_live_note || "없음")}</div>`;
+
+      const thumbSrc = selectedPhotoPayload ? selectedPhotoPayload.dataUrl : "";
+
+      card.innerHTML = `
+        <div class="result-flex">
+          ${thumbSrc ? `<img src="${thumbSrc}" class="result-thumb" alt="item">` : ""}
+          <div style="flex:1; min-width:0;">
+            <div style="display:inline-block; background:rgba(16,185,129,0.16); border:1px solid rgba(16,185,129,0.45); color:#6EE7B7; font-size:10.5px; font-weight:800; padding:3px 9px; border-radius:999px;">✓ Vision AI Match · Sheet Saved</div>
+            <div style="color:#fff; font-weight:800; font-size:15px; margin-top:6px; word-break:break-word;">${escapeHtml_(d.item_name || "Unknown")}</div>
+            <div class="meta-line">${escapeHtml_(d.brand || "Unknown")} · ${escapeHtml_(d.category || "General")} · ${escapeHtml_(d.condition || "-")}</div>
+            <div class="meta-line tabular" style="color:var(--accent-gold-bright); font-weight:700;">AI Confidence ${conf}%</div>
+            <div class="conf-bar-wrap"><div class="conf-bar-fill" style="width:${conf}%;"></div></div>
+          </div>
+        </div>
+
+        <div class="market-gold-card">
+          <div style="font-size:11px; color:var(--text-secondary); font-weight:700;">Estimated Resale Price (eBay 기준)</div>
+          <div class="market-big-price tabular">$${Number(d.ai_est_resale_price || 0).toFixed(2)}</div>
+          ${marketRangeHtml}
+        </div>
+
+        <div class="max-buy-banner ${bannerCls}">
+          <div>
+            <div class="banner-kicker">Recommended Max Buy Price</div>
+            <div class="banner-price tabular">$${Number(d.calculated_max_buy || 0).toFixed(2)}</div>
+          </div>
+          <div class="banner-decision-pill" style="background:${pillBg};">
+            <div>${escapeHtml_(decision)}</div>
+            <div class="banner-roi tabular">${Number(d.est_roi_percent || 0)}% ROI</div>
+          </div>
+        </div>
+
+        <div class="eval-section-title"><span>FINANCIAL BREAKDOWN</span></div>
+        <div class="kv-row"><span class="kv-label">Est. Resale Price</span><span class="kv-val tabular">$${Number(d.ai_est_resale_price || 0).toFixed(2)}</span></div>
+        <div class="kv-row"><span class="kv-label">Asking Price</span><span class="kv-val tabular">$${Number(d.asking_price || 0).toFixed(2)}</span></div>
+        <div class="kv-row"><span class="kv-label">eBay Fees</span><span class="kv-val tabular">-$${Number(d.calculated_fees || 0).toFixed(2)}</span></div>
+        <div class="kv-row"><span class="kv-label">Shipping</span><span class="kv-val tabular">-$${Number(d.calculated_shipping || 0).toFixed(2)}</span></div>
+        <div class="kv-row"><span class="kv-label">Est. Net Profit</span><span class="kv-val tabular" style="color:${Number(d.est_net_profit) >= 0 ? 'var(--status-buy)' : 'var(--status-pass)'};">$${Number(d.est_net_profit || 0).toFixed(2)}</span></div>
+
+        <div class="meta-line" style="margin-top:8px; color:var(--text-primary);">${escapeHtml_(d.analysis_summary || "")}</div>
+
+        <div class="btn-row" style="margin-top:12px;">
+          ${d.ebay_sold_url ? `<a href="${escapeHtml_(d.ebay_sold_url)}" target="_blank" rel="noopener noreferrer" class="btn-secondary" style="flex:1; height:42px;">🔍 eBay Sold 확인</a>` : ""}
+          <button type="button" class="btn-secondary" style="flex:1; height:42px; color:var(--accent-gold-bright);" onclick="copyListingField_('title', 'photoStatusBox')">📋 리스팅 제목 복사</button>
+        </div>
+      `;
+    }
+
+    // ==========================================
+    // MODE 2: UPC SCANNER + 4-1 + 4-2 + 4-3 시트 저장
+    // ==========================================
     function createEmptyLookupState() {
       return {
         upc: "",
@@ -277,7 +1014,7 @@
         url: "",
         image: "",
         category: "",
-        priceSource: "NONE", // EBAY_BROWSE_API | UPCITEMDB | NONE
+        priceSource: "NONE",
         originalTitle: "",
         originalBrand: "",
         originalAvgPrice: null,
@@ -324,14 +1061,8 @@
       };
     }
 
-    function onEditProductTitle(value) {
-      upcLookupState.userAdjustedTitle = String(value || "");
-    }
-
-    function onEditProductBrand(value) {
-      upcLookupState.userAdjustedBrand = String(value || "");
-    }
-
+    function onEditProductTitle(value) { upcLookupState.userAdjustedTitle = String(value || ""); }
+    function onEditProductBrand(value) { upcLookupState.userAdjustedBrand = String(value || ""); }
     function onEditProductPrice(value) {
       const trimmed = String(value ?? "").trim();
       if (trimmed === "") {
@@ -347,10 +1078,7 @@
     }
 
     function getEffectivePrice() {
-      if (upcLookupState.isPriceEdited) {
-        return upcLookupState.userAdjustedPrice;
-      }
-      return upcLookupState.originalAvgPrice;
+      return upcLookupState.isPriceEdited ? upcLookupState.userAdjustedPrice : upcLookupState.originalAvgPrice;
     }
 
     function getAiEvaluationCandidatePayload() {
@@ -385,48 +1113,15 @@
       selectedProductCondition = cond;
       const chips = document.querySelectorAll("#conditionChips .cond-chip");
       chips.forEach(function(btn) {
-        if (btn.getAttribute("data-cond") === cond) {
-          btn.classList.add("active");
-        } else {
-          btn.classList.remove("active");
-        }
+        btn.classList.toggle("active", btn.getAttribute("data-cond") === cond);
       });
     }
 
-    (function initEndpoint() {
-      const saved = localStorage.getItem(STORAGE_KEY_URL) || DEFAULT_GAS_ENDPOINT_URL;
-      if (saved) {
-        document.getElementById("gasEndpointUrl").value = saved;
-      }
-    })();
-
-    function saveEndpointUrl() {
-      const url = document.getElementById("gasEndpointUrl").value.trim();
-      if (url) {
-        localStorage.setItem(STORAGE_KEY_URL, url);
-      } else {
-        localStorage.removeItem(STORAGE_KEY_URL);
-      }
-    }
-
-    function getGasEndpointUrl() {
-      const inputVal = document.getElementById("gasEndpointUrl").value.trim();
-      if (inputVal) {
-        localStorage.setItem(STORAGE_KEY_URL, inputVal);
-        return inputVal;
-      }
-      return DEFAULT_GAS_ENDPOINT_URL.trim();
-    }
-
-    function setLog(msg) {
-      document.getElementById("scannerLog").textContent = msg;
-    }
-
-    function setEvalLog(msg) {
-      document.getElementById("evalStatusBox").textContent = msg;
-    }
+    function setLog(msg) { document.getElementById("scannerLog").textContent = msg; }
+    function setEvalLog(msg) { document.getElementById("evalStatusBox").textContent = msg; }
 
     function hideEvalResultCard() {
+      latestUpcEvalSnapshot = null;
       const card = document.getElementById("evalResultCard");
       card.style.display = "none";
       card.innerHTML = "";
@@ -440,27 +1135,19 @@
       hideEvalResultCard();
     }
 
-    function escapeHtml_(str) {
-      return String(str || "")
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;");
-    }
-
     function renderUpcResult(code, product) {
       syncLookupStateFromResponse(code, product);
       hideEvalResultCard();
-      setEvalLog("AI 평가 대기 중: 상품 상태를 선택하고 0보다 큰 매입가($)를 입력한 뒤 [AI 평가 실행]을 누르세요.");
+      setEvalLog("분석 대기 중: 상품 상태를 선택하고 0보다 큰 매입가($)를 입력한 뒤 [Analyze Profit & Decision]을 누르세요.");
 
       const card = document.getElementById("upcResultCard");
       card.style.display = "block";
 
       if (product && product.isUrl) {
         card.innerHTML = `
-          <div style="color:var(--buy); font-weight:700; margin-bottom:4px;">🔗 URL 인식됨</div>
+          <div style="color:var(--status-buy); font-weight:700; margin-bottom:4px;">🔗 URL 인식됨</div>
           <div class="meta-line">코드/입력값: ${escapeHtml_(upcLookupState.upc)}</div>
-          <a href="${escapeHtml_(product.url)}" target="_blank" rel="noopener noreferrer" style="color:var(--accent); word-break:break-all; display:inline-block; margin-top:6px;">${escapeHtml_(product.url)}</a>
+          <a href="${escapeHtml_(product.url)}" target="_blank" rel="noopener noreferrer" style="color:var(--accent-gold-bright); word-break:break-all; display:inline-block; margin-top:6px;">${escapeHtml_(product.url)}</a>
         `;
         return;
       }
@@ -475,12 +1162,12 @@
 
       if (upcLookupState.priceSource === "EBAY_BROWSE_API" && upcLookupState.originalAvgPrice !== null) {
         const formatted = `$${upcLookupState.originalAvgPrice.toFixed(2)}`;
-        priceDisplayHtml = `<div class="meta-line" style="color:var(--accent); font-weight:700;">eBay Current Average (eBay 현재 판매 평균가): ${formatted}</div>`;
+        priceDisplayHtml = `<div class="meta-line tabular" style="color:var(--accent-gold-bright); font-weight:700;">eBay Current Average: ${formatted}</div>`;
         editPriceLabel = "User Adjusted Reference Price ($ 수정 가능)";
         editPriceHint = `Original eBay Current Listing Average: ${formatted} (미수정 시 원본값 유지)`;
       } else if (upcLookupState.priceSource === "UPCITEMDB" && upcLookupState.originalAvgPrice !== null) {
         const formatted = `$${upcLookupState.originalAvgPrice.toFixed(2)}`;
-        priceDisplayHtml = `<div class="meta-line" style="color:var(--maybe); font-weight:700;">UPCitemdb 참고가: ${formatted} (eBay Browse API 현재 판매 평균가 아님)</div>`;
+        priceDisplayHtml = `<div class="meta-line tabular" style="color:var(--status-maybe); font-weight:700;">UPCitemdb 참고가: ${formatted} (eBay Current Average 아님)</div>`;
         editPriceLabel = "User Adjusted Reference Price ($ 수정 가능)";
         editPriceHint = `UPCitemdb 참고가: ${formatted} (eBay Current Average가 아니며 미수정 시 해당 참고가 유지)`;
       }
@@ -490,19 +1177,17 @@
       const titleText = upcLookupState.originalTitle ? upcLookupState.originalTitle : "조회된 상품명 없음";
 
       const headerBadge = product && product.found
-        ? `<div style="color:var(--buy); font-weight:800; font-size:12px;">✅ UPC 조회 결과 (UPC: ${escapeHtml_(upcLookupState.upc)})</div>`
-        : `<div style="color:var(--maybe); font-weight:800; font-size:12px;">ℹ️ UPC 조회 결과 없음 (UPC: ${escapeHtml_(upcLookupState.upc)})</div>`;
+        ? `<div style="color:var(--status-buy); font-weight:800; font-size:11.5px;">✓ UPC MATCHED · ${escapeHtml_(upcLookupState.upc)}</div>`
+        : `<div style="color:var(--status-maybe); font-weight:800; font-size:11.5px;">! NO UPC RECORD · ${escapeHtml_(upcLookupState.upc)}</div>`;
 
-      const priceInputDefault = upcLookupState.originalAvgPrice !== null
-        ? upcLookupState.originalAvgPrice.toFixed(2)
-        : "";
+      const priceInputDefault = upcLookupState.originalAvgPrice !== null ? upcLookupState.originalAvgPrice.toFixed(2) : "";
 
       card.innerHTML = `
         <div class="result-flex">
           ${thumbHtml}
           <div style="flex:1; min-width:0;">
             ${headerBadge}
-            <div style="color:#fff; font-weight:700; font-size:14px; margin-top:4px; word-break:break-word;">${escapeHtml_(titleText)}</div>
+            <div style="color:var(--text-primary); font-weight:700; font-size:14px; margin-top:4px; word-break:break-word;">${escapeHtml_(titleText)}</div>
             <div class="meta-line">브랜드: ${escapeHtml_(brandText)}</div>
             <div class="meta-line">카테고리: ${escapeHtml_(categoryText)}</div>
             ${priceDisplayHtml}
@@ -510,7 +1195,7 @@
         </div>
 
         <div class="edit-box">
-          <div style="color:#fff; font-weight:700; font-size:12px;">✏️ 상품 정보 확인 및 수정</div>
+          <div style="color:var(--text-primary); font-weight:700; font-size:12px;">상품 정보 확인 및 보정</div>
           <div class="edit-grid">
             <div>
               <label class="label">상품명 (수정 가능)</label>
@@ -522,7 +1207,7 @@
             </div>
             <div>
               <label class="label">${escapeHtml_(editPriceLabel)}</label>
-              <input type="number" id="editPriceInput" step="0.01" min="0" class="input" value="${escapeHtml_(priceInputDefault)}" placeholder="예: 29.99" oninput="onEditProductPrice(this.value)">
+              <input type="number" id="editPriceInput" step="0.01" min="0" inputmode="decimal" class="input tabular" value="${escapeHtml_(priceInputDefault)}" placeholder="예: 29.99" oninput="onEditProductPrice(this.value)">
               <div class="edit-note">${escapeHtml_(editPriceHint)}</div>
             </div>
           </div>
@@ -531,18 +1216,11 @@
     }
 
     async function runAiEvaluationFromUpc() {
-      const endpointUrl = getGasEndpointUrl();
-      if (!endpointUrl || !/^https:\/\/script\.google\.com\/macros\/s\/.+\/exec$/i.test(endpointUrl)) {
-        setEvalLog("❌ 유효한 GAS Web App Endpoint URL을 먼저 입력해 주세요.");
-        return;
-      }
-
       const candidate = getAiEvaluationCandidatePayload();
       if (!candidate.title && !candidate.upc) {
         setEvalLog("❌ 평가할 상품명 또는 UPC 코드가 없습니다. 먼저 UPC를 스캔하거나 상품명을 입력해 주세요.");
         return;
       }
-
       if (!selectedProductCondition) {
         setEvalLog("❌ 상품 상태(PRODUCT CONDITION)를 선택해 주세요.");
         return;
@@ -558,45 +1236,25 @@
       const btn = document.getElementById("runEvalBtn");
       btn.disabled = true;
       hideEvalResultCard();
-      setEvalLog("⏳ AI Agent 평가 요청 중 (검색어 및 시장/손익/판정 조회)...");
-
-      const payload = {
-        action: "evaluateUpcItem",
-        upc: candidate.upc,
-        title: candidate.title,
-        brand: candidate.brand,
-        category: candidate.category,
-        condition: selectedProductCondition,
-        askingPrice: Number(askingNum.toFixed(2)),
-        pricing: candidate.pricing
-      };
+      setEvalLog("⏳ Resellpro AI 수익성 분석 중...");
 
       try {
-        const response = await fetch(endpointUrl, {
-          method: "POST",
-          headers: {
-            "Content-Type": "text/plain;charset=utf-8"
-          },
-          body: JSON.stringify(payload)
+        const data = await postToGas_({
+          action: "evaluateUpcItem",
+          upc: candidate.upc,
+          title: candidate.title,
+          brand: candidate.brand,
+          category: candidate.category,
+          condition: selectedProductCondition,
+          askingPrice: Number(askingNum.toFixed(2)),
+          pricing: candidate.pricing
         });
-
-        if (!response.ok) {
-          throw new Error("HTTP 상태 오류 (" + response.status + ")");
-        }
-
-        const rawText = await response.text();
-        let data = null;
-        try {
-          data = JSON.parse(rawText);
-        } catch (e) {
-          throw new Error("GAS 응답이 JSON 형식이 아닙니다.");
-        }
 
         if (!data || !data.success || !data.agent) {
           throw new Error(data && data.error ? data.error : "AI 평가 응답이 올바르지 않습니다.");
         }
 
-        setEvalLog("✅ AI 평가 처리 완료");
+        setEvalLog("✅ Resellpro AI 분석 완료");
         renderAgentEvaluationResult(data.agent, Number(askingNum.toFixed(2)), candidate);
       } catch (err) {
         const msg = err && err.message ? err.message : String(err);
@@ -621,6 +1279,11 @@
       const meta = agent.meta || {};
       const errors = Array.isArray(meta.errors) ? meta.errors : [];
 
+      latestListingDraft = {
+        title: lst.title ? String(lst.title) : "",
+        description: lst.description ? String(lst.description) : ""
+      };
+
       const visionRan = meta.vision_engine === "GROQ" || meta.vision_engine === "GEMINI";
       const aiConfidenceText = visionRan
         ? `${Number(prod.confidence || 0)}% (${escapeHtml_(meta.vision_engine)})`
@@ -631,18 +1294,18 @@
 
       let origPriceLine = `<div class="kv-row"><span class="kv-label">eBay Current Average (eBay Browse API)</span><span class="kv-val">해당 없음 / 미조회</span></div>`;
       if (candidate && candidate.pricing && candidate.pricing.priceSource === "EBAY_BROWSE_API" && candidate.pricing.originalAvgPrice !== null) {
-        origPriceLine = `<div class="kv-row"><span class="kv-label">eBay Current Average (eBay Browse API)</span><span class="kv-val">$${Number(candidate.pricing.originalAvgPrice).toFixed(2)}</span></div>`;
+        origPriceLine = `<div class="kv-row"><span class="kv-label">eBay Current Average (eBay Browse API)</span><span class="kv-val tabular">$${Number(candidate.pricing.originalAvgPrice).toFixed(2)}</span></div>`;
       } else if (candidate && candidate.pricing && candidate.pricing.priceSource === "UPCITEMDB" && candidate.pricing.originalAvgPrice !== null) {
-        origPriceLine = `<div class="kv-row"><span class="kv-label">UPCitemdb 참고가 (eBay Current Average 아님)</span><span class="kv-val">$${Number(candidate.pricing.originalAvgPrice).toFixed(2)}</span></div>`;
+        origPriceLine = `<div class="kv-row"><span class="kv-label">UPCitemdb 참고가 (eBay Current Average 아님)</span><span class="kv-val tabular">$${Number(candidate.pricing.originalAvgPrice).toFixed(2)}</span></div>`;
       }
 
       const userRefLine = (candidate && candidate.pricing && candidate.pricing.userAdjustedPrice !== null && candidate.pricing.userAdjustedPrice !== undefined)
-        ? `<div class="kv-row"><span class="kv-label">User Adjusted Reference (참고용, 계산 미반영)</span><span class="kv-val">$${Number(candidate.pricing.userAdjustedPrice).toFixed(2)}</span></div>`
+        ? `<div class="kv-row"><span class="kv-label">User Adjusted Reference (참고용, 계산 미반영)</span><span class="kv-val tabular">$${Number(candidate.pricing.userAdjustedPrice).toFixed(2)}</span></div>`
         : `<div class="kv-row"><span class="kv-label">User Adjusted Reference (참고용, 계산 미반영)</span><span class="kv-val">없음</span></div>`;
 
       const hasAgentSalePrice = meta.price_source && meta.price_source !== "NONE" && Number(fin.suggested_sale_price) > 0;
       const agentSuggestedLine = hasAgentSalePrice
-        ? `<div class="kv-row"><span class="kv-label">Agent Suggested Sale Price (${escapeHtml_(meta.price_source)})</span><span class="kv-val">$${Number(fin.suggested_sale_price).toFixed(2)}</span></div>`
+        ? `<div class="kv-row"><span class="kv-label">Agent Suggested Sale Price (${escapeHtml_(meta.price_source)})</span><span class="kv-val tabular">$${Number(fin.suggested_sale_price).toFixed(2)}</span></div>`
         : `<div class="kv-row"><span class="kv-label">Agent Suggested Sale Price</span><span class="kv-val">산출 불가 (가격 기준 없음)</span></div>`;
 
       const ebayFailed = meta.current_market_available === false;
@@ -651,15 +1314,15 @@
         marketBlockHtml += `<div class="warn-box">⚠️ eBay 현재 리스팅 검색 실패 또는 매물 없음 (검색어: ${escapeHtml_(meta.search_query || "-")})</div>`;
       } else {
         marketBlockHtml += `
-          <div class="kv-row"><span class="kv-label">현재 리스팅 수</span><span class="kv-val">${Number(mkt.current_listing_count || 0)}건</span></div>
-          <div class="kv-row"><span class="kv-label">현재 리스팅 Low / Avg / High</span><span class="kv-val">$${Number(mkt.current_low || 0).toFixed(2)} / $${Number(mkt.current_avg || 0).toFixed(2)} / $${Number(mkt.current_high || 0).toFixed(2)}</span></div>
+          <div class="kv-row"><span class="kv-label">현재 리스팅 수</span><span class="kv-val tabular">${Number(mkt.current_listing_count || 0)}건</span></div>
+          <div class="kv-row"><span class="kv-label">현재 리스팅 Low / Avg / High</span><span class="kv-val tabular">$${Number(mkt.current_low || 0).toFixed(2)} / $${Number(mkt.current_avg || 0).toFixed(2)} / $${Number(mkt.current_high || 0).toFixed(2)}</span></div>
         `;
       }
 
       if (meta.sold_data_available === true && Number(mkt.sold_count) > 0) {
         marketBlockHtml += `
-          <div class="kv-row"><span class="kv-label">SOLD 데이터 (${Number(mkt.sold_count)}건)</span><span class="kv-val">평균 $${Number(mkt.sold_avg || 0).toFixed(2)} / 중간값 $${Number(mkt.sold_median || 0).toFixed(2)}</span></div>
-          <div class="kv-row"><span class="kv-label">SOLD Low / High</span><span class="kv-val">$${Number(mkt.sold_low || 0).toFixed(2)} / $${Number(mkt.sold_high || 0).toFixed(2)}</span></div>
+          <div class="kv-row"><span class="kv-label">SOLD 데이터 (${Number(mkt.sold_count)}건)</span><span class="kv-val tabular">평균 $${Number(mkt.sold_avg || 0).toFixed(2)} / 중간값 $${Number(mkt.sold_median || 0).toFixed(2)}</span></div>
+          <div class="kv-row"><span class="kv-label">SOLD Low / High</span><span class="kv-val tabular">$${Number(mkt.sold_low || 0).toFixed(2)} / $${Number(mkt.sold_high || 0).toFixed(2)}</span></div>
         `;
       } else {
         marketBlockHtml += `<div class="kv-row"><span class="kv-label">SOLD 데이터</span><span class="kv-val">실제 SOLD 데이터 없음 (미조회/미연동)</span></div>`;
@@ -670,20 +1333,50 @@
         financialBlockHtml = `<div class="warn-box">⚠️ 시장 가격 기준이 없어 예상 판매가·수수료·순이익·ROI·최대 매입가를 산출할 수 없습니다.</div>`;
       } else {
         financialBlockHtml = `
-          <div class="kv-row"><span class="kv-label">예상 판매가격</span><span class="kv-val">$${Number(fin.suggested_sale_price).toFixed(2)}</span></div>
-          <div class="kv-row"><span class="kv-label">매입가 (Asking Price)</span><span class="kv-val">$${Number(askingPrice).toFixed(2)}</span></div>
-          <div class="kv-row"><span class="kv-label">eBay Fee / 배송비</span><span class="kv-val">$${Number(fin.ebay_fee || 0).toFixed(2)} / $${Number(fin.shipping_cost || 0).toFixed(2)}</span></div>
-          <div class="kv-row"><span class="kv-label">예상 순이익</span><span class="kv-val">$${Number(fin.estimated_profit || 0).toFixed(2)}</span></div>
-          <div class="kv-row"><span class="kv-label">ROI</span><span class="kv-val">${Number(fin.roi || 0)}%</span></div>
-          <div class="kv-row"><span class="kv-label">최대 매입가</span><span class="kv-val">$${Number(fin.max_buy_price || 0).toFixed(2)}</span></div>
+          <div class="kv-row"><span class="kv-label">예상 판매가격</span><span class="kv-val tabular">$${Number(fin.suggested_sale_price).toFixed(2)}</span></div>
+          <div class="kv-row"><span class="kv-label">매입가 (Asking Price)</span><span class="kv-val tabular">$${Number(askingPrice).toFixed(2)}</span></div>
+          <div class="kv-row"><span class="kv-label">eBay Fee / 배송비</span><span class="kv-val tabular">$${Number(fin.ebay_fee || 0).toFixed(2)} / $${Number(fin.shipping_cost || 0).toFixed(2)}</span></div>
+          <div class="kv-row"><span class="kv-label">예상 순이익</span><span class="kv-val tabular" style="color:${Number(fin.estimated_profit) >= 0 ? 'var(--status-buy)' : 'var(--status-pass)'};">$${Number(fin.estimated_profit || 0).toFixed(2)}</span></div>
+          <div class="kv-row"><span class="kv-label">ROI</span><span class="kv-val tabular" style="color:var(--accent-gold-bright);">${Number(fin.roi || 0)}%</span></div>
+          <div class="kv-row"><span class="kv-label">최대 매입가 (Max Buy)</span><span class="kv-val tabular" style="color:var(--accent-gold-bright);">$${Number(fin.max_buy_price || 0).toFixed(2)}</span></div>
         `;
       }
 
       const aiFailed = meta.vision_engine === "FAILED" || (errors.some(function(e) { return String(e).indexOf("실패") >= 0 || String(e).indexOf("오류") >= 0; }) && !hasAgentSalePrice);
       const decisionResult = dec.result || "PASS";
-      let decisionBg = "#ff5d6c";
-      if (decisionResult === "BUY") decisionBg = "#25d695";
-      else if (decisionResult === "MAYBE") decisionBg = "#ffc857";
+      let bannerCls = "pass";
+      let decisionBg = "var(--status-pass)";
+      if (decisionResult === "BUY") { bannerCls = "buy"; decisionBg = "var(--status-buy)"; }
+      else if (decisionResult === "MAYBE") { bannerCls = "maybe"; decisionBg = "var(--status-maybe)"; }
+
+      const heroMaxBuyText = hasAgentSalePrice ? `$${Number(fin.max_buy_price || 0).toFixed(2)}` : "N/A";
+      const heroRoiText = hasAgentSalePrice ? `${Number(fin.roi || 0)}% ROI` : "ROI N/A";
+      const searchQueryText = meta.search_query || candidate.title || candidate.upc || "";
+      const ebaySoldDirectUrl = "https://www.ebay.com/sch/i.html?_nkw=" + encodeURIComponent(searchQueryText) + "&LH_Complete=1&LH_Sold=1";
+
+      // 4-3 시트 저장용 스냅샷 보관
+      latestUpcEvalSnapshot = {
+        action: "saveUpcAppraisal",
+        upc: candidate.upc || "",
+        title: prod.name || candidate.title || "",
+        brand: prod.brand || candidate.brand || "Unknown",
+        category: prod.category || candidate.category || "General",
+        condition: prod.condition || selectedProductCondition || "",
+        confidence: visionRan ? Number(prod.confidence || 0) : "N/A",
+        askingPrice: Number(askingPrice),
+        suggestedSalePrice: hasAgentSalePrice ? Number(fin.suggested_sale_price || 0) : 0,
+        ebayFee: hasAgentSalePrice ? Number(fin.ebay_fee || 0) : 0,
+        shippingCost: hasAgentSalePrice ? Number(fin.shipping_cost || 0) : 0,
+        maxBuyPrice: hasAgentSalePrice ? Number(fin.max_buy_price || 0) : 0,
+        estimatedProfit: hasAgentSalePrice ? Number(fin.estimated_profit || 0) : 0,
+        roi: hasAgentSalePrice ? Number(fin.roi || 0) : 0,
+        decision: decisionResult,
+        grade: decisionResult === "BUY" ? "A" : (decisionResult === "MAYBE" ? "B" : "C"),
+        reason: dec.reason || "",
+        searchQuery: searchQueryText,
+        imageUrl: candidate.image || "",
+        ebayLiveAvg: !ebayFailed && Number(mkt.current_avg) > 0 ? Number(mkt.current_avg) : ""
+      };
 
       const aiFailureNotice = aiFailed
         ? `<div class="alert-box">❌ AI / 시장 분석 오류 발생\n${escapeHtml_(errors.join("\n"))}</div>`
@@ -693,36 +1386,84 @@
       const listingDescText = lst.description ? escapeHtml_(lst.description) : "생성된 상품 설명 없음";
 
       card.innerHTML = `
-        <div class="eval-section-title">PRODUCT & SEARCH QUERY</div>
+        <!-- 시안 스타일 Recommended Max Buy Price 배너 -->
+        <div class="max-buy-banner ${bannerCls}">
+          <div>
+            <div class="banner-kicker">Recommended Max Buy Price</div>
+            <div class="banner-price tabular">${heroMaxBuyText}</div>
+            <div class="meta-line" style="color:var(--text-primary); opacity:0.85;">Score ${Number(dec.score || 0)}/100 · AI 신뢰도 ${aiConfidenceText}</div>
+          </div>
+          <div class="banner-decision-pill" style="background:${decisionBg};">
+            <div>${escapeHtml_(decisionResult)}</div>
+            <div class="banner-roi tabular">${heroRoiText}</div>
+          </div>
+        </div>
+
+        <div class="meta-line" style="color:var(--text-primary); margin-bottom:10px;">판정 이유: ${escapeHtml_(dec.reason || "")}</div>
+
+        <!-- 4-3 Google Sheets 저장 + eBay Sold 직통 버튼 -->
+        <div class="btn-row" style="margin-bottom:12px;">
+          <button type="button" id="saveSheetBtn" class="btn-sheet-save" onclick="saveUpcResultToSheet()">💾 Google Sheets에 저장</button>
+          <a href="${escapeHtml_(ebaySoldDirectUrl)}" target="_blank" rel="noopener noreferrer" class="btn-secondary" style="height:44px; padding:0 12px;">🔍 eBay Sold</a>
+        </div>
+
+        <div class="eval-section-title"><span>PRODUCT & SEARCH QUERY</span></div>
         <div class="kv-row"><span class="kv-label">상품명</span><span class="kv-val">${escapeHtml_(prod.name || candidate.title || "-")}</span></div>
         <div class="kv-row"><span class="kv-label">브랜드</span><span class="kv-val">${escapeHtml_(prod.brand || candidate.brand || "-")}</span></div>
         <div class="kv-row"><span class="kv-label">카테고리</span><span class="kv-val">${escapeHtml_(prod.category || candidate.category || "-")}</span></div>
         <div class="kv-row"><span class="kv-label">상태 (Condition)</span><span class="kv-val">${escapeHtml_(prod.condition || selectedProductCondition || "-")}</span></div>
-        <div class="kv-row"><span class="kv-label">AI 사진 분석 신뢰도</span><span class="kv-val">${aiConfidenceText}</span></div>
         <div class="kv-row"><span class="kv-label">UPC 조회 상태</span><span class="kv-val">${upcLookupStatusText}</span></div>
         <div class="kv-row"><span class="kv-label">Agent eBay 검색어 (meta.search_query)</span><span class="kv-val">${escapeHtml_(meta.search_query || "-")}</span></div>
 
-        <div class="eval-section-title">MARKET & PRICE COMPARISON</div>
+        <div class="eval-section-title"><span>MARKET & PRICE COMPARISON</span></div>
         ${origPriceLine}
         ${userRefLine}
         ${agentSuggestedLine}
         ${marketBlockHtml}
 
-        <div class="eval-section-title">FINANCIAL</div>
+        <div class="eval-section-title"><span>FINANCIAL BREAKDOWN</span></div>
         ${financialBlockHtml}
-
-        <div class="eval-section-title">DECISION & LISTING</div>
-        <div class="decision-box" style="background:${decisionBg};">
-          ${escapeHtml_(decisionResult)} (${Number(dec.score || 0)}점)
-        </div>
-        <div class="meta-line" style="margin-top:8px;">판정 이유: ${escapeHtml_(dec.reason || "")}</div>
         ${aiFailureNotice}
 
-        <div class="eval-section-title">eBay LISTING DRAFT</div>
-        <div class="listing-box"><b>제목:</b> ${listingTitleText}\n\n<b>설명:</b>\n${listingDescText}</div>
+        <div class="eval-section-title">
+          <span>LISTING STUDIO · eBay DRAFT</span>
+          <div style="display:flex; gap:6px;">
+            <button type="button" class="btn-mini" onclick="copyListingField_('title', 'evalStatusBox')">제목 복사</button>
+            <button type="button" class="btn-mini" onclick="copyListingField_('desc', 'evalStatusBox')">설명 복사</button>
+          </div>
+        </div>
+        <div class="listing-box"><b>Title:</b> ${listingTitleText}\n\n<b>Description:</b>\n${listingDescText}</div>
       `;
     }
 
+    async function saveUpcResultToSheet() {
+      if (!latestUpcEvalSnapshot) {
+        setEvalLog("❌ 저장할 AI 평가 결과가 없습니다.");
+        return;
+      }
+      const btn = document.getElementById("saveSheetBtn");
+      if (btn) {
+        btn.disabled = true;
+        btn.textContent = "⏳ 시트 저장 중...";
+      }
+      try {
+        const res = await postToGas_(latestUpcEvalSnapshot);
+        if (!res || !res.success) {
+          throw new Error(res && res.error ? res.error : "시트 저장에 실패했습니다.");
+        }
+        setEvalLog(`✅ Google Sheets(${res.sheetName || "Mobile_AI_Appraisals"}) 저장 완료 (${res.savedAt || ""})`);
+        if (btn) btn.textContent = "✓ 시트 저장 완료";
+      } catch (err) {
+        const msg = err && err.message ? err.message : String(err);
+        setEvalLog("❌ 시트 저장 실패: " + msg);
+        if (btn) {
+          btn.disabled = false;
+          btn.textContent = "💾 Google Sheets에 저장";
+        }
+      }
+    }
+
+    // 실시간 UPC 스캐너 (기존 동작 그대로 유지)
     function getSupportedUpcFormats() {
       if (typeof Html5QrcodeSupportedFormats === "undefined") return undefined;
       return [
@@ -735,7 +1476,7 @@
 
     async function startUpcScanner() {
       if (typeof Html5Qrcode === "undefined") {
-        setLog("❌ 바코드 스캐너 라이브러리를 불러오지 못했습니다. (라이브러리 로드 실패/차단)");
+        setLog("❌ 바코드 스캐너 라이브러리를 불러오지 못했습니다. 페이지를 새로고침해 주세요.");
         return;
       }
 
@@ -769,11 +1510,11 @@
           onUpcDecoded,
           function() {}
         );
-        setLog("✅ 실시간 카메라 실행 중 (UPC_A / UPC_E / EAN_13 / EAN_8 대기)");
+        setLog("✅ 실시간 카메라 실행 중 (골드 프레임 안에 바코드를 맞추세요)");
       } catch (err) {
         const detail = err && (err.name || err.message) ? `${err.name ? err.name + ": " : ""}${err.message || err}` : "카메라 접근 거부 또는 오류";
         await stopUpcScanner();
-        setLog("❌ 카메라 실행 실패: " + detail + "\n사파리 설정/권한 또는 다른 앱의 카메라 점유 여부를 확인해 주세요.");
+        setLog("❌ 카메라 실행 실패: " + detail);
       }
     }
 
@@ -784,19 +1525,14 @@
       if (upcScannerInstance) {
         const ref = upcScannerInstance;
         upcScannerInstance = null;
-        try {
-          await ref.stop();
-        } catch (e) {}
-        try {
-          await ref.clear();
-        } catch (e) {}
+        try { await ref.stop(); } catch (e) {}
+        try { await ref.clear(); } catch (e) {}
       }
     }
 
     async function onUpcDecoded(decodedText) {
       const cleaned = String(decodedText || "").replace(/[^0-9]/g, "").trim();
       if (!cleaned) return;
-
       if (isScanLocked) return;
       if (cleaned === lastScannedUpc) return;
 
@@ -817,58 +1553,126 @@
     }
 
     async function triggerAutoUpcLookup(upcCode) {
-      const endpointUrl = getGasEndpointUrl();
-      if (!endpointUrl) {
-        setLog("❌ GAS Web App Endpoint URL이 설정되지 않았습니다.\n하단 입력칸에 배포된 GAS 웹앱 URL을 입력해 주세요.");
-        return;
-      }
-
-      if (!/^https:\/\/script\.google\.com\/macros\/s\/.+\/exec$/i.test(endpointUrl)) {
-        setLog("❌ 올바른 GAS 웹앱 URL 형식이 아닙니다. (https://script.google.com/macros/s/.../exec 확인)");
-        return;
-      }
-
-      setLog("⏳ GAS 백엔드로 UPC(" + upcCode + ") 조회 요청 중...");
-
+      setLog("⏳ Resellpro 백엔드로 UPC(" + upcCode + ") 조회 요청 중...");
       try {
-        const response = await fetch(endpointUrl, {
-          method: "POST",
-          headers: {
-            "Content-Type": "text/plain;charset=utf-8"
-          },
-          body: JSON.stringify({
-            action: "lookupBarcode",
-            code: upcCode
-          })
+        const data = await postToGas_({
+          action: "lookupBarcode",
+          code: upcCode
         });
-
-        if (!response.ok) {
-          throw new Error("HTTP 상태 오류 (" + response.status + ") — GAS 웹앱 액세스 권한(모든 사용자)을 확인해 주세요.");
-        }
-
-        const rawText = await response.text();
-        let data = null;
-        try {
-          data = JSON.parse(rawText);
-        } catch (parseErr) {
-          throw new Error("GAS 응답이 JSON 형식이 아닙니다. 웹앱 배포 버전 및 공유 권한을 확인해 주세요.");
-        }
-
         if (!data || !data.success) {
           throw new Error(data && data.error ? data.error : "UPC 조회에 실패했습니다.");
         }
-
-        setLog("✅ GAS 백엔드 조회 완료 (UPC: " + upcCode + ")");
+        setLog("✅ 조회 완료 (UPC: " + upcCode + ")");
         renderUpcResult(upcCode, data.product);
       } catch (err) {
         hideResultCard();
         const errMsg = err && err.message ? err.message : String(err);
-        if (errMsg.indexOf("Failed to fetch") >= 0 || errMsg.indexOf("NetworkError") >= 0) {
-          setLog("❌ 네트워크/CORS 또는 GAS 권한 오류: GAS 배포 설정에서 '액세스 권한: 모든 사용자'로 되어 있는지 확인해 주세요.");
-        } else {
-          setLog("❌ 조회 오류: " + errMsg);
-        }
+        setLog("❌ 조회 오류: " + errMsg);
       }
+    }
+
+    // ==========================================
+    // MODE 3: STORAGE AUCTION ANALYZER
+    // ==========================================
+    async function onStoragePhotosSelected(input) {
+      const files = Array.from(input.files || []).slice(0, 5);
+      if (files.length < 1) return;
+
+      const statusEl = document.getElementById("storageStatusBox");
+      const thumbsEl = document.getElementById("storageThumbs");
+      statusEl.textContent = `⏳ 스토리지 사진 ${files.length}장 최적화 중...`;
+      thumbsEl.innerHTML = "";
+      selectedStorageImages = [];
+
+      try {
+        for (let i = 0; i < files.length; i++) {
+          const comp = await compressImageFile_(files[i], 960, 0.72);
+          selectedStorageImages.push({
+            data: comp.base64,
+            mimeType: comp.mimeType
+          });
+          const img = document.createElement("img");
+          img.src = comp.dataUrl;
+          thumbsEl.appendChild(img);
+        }
+        statusEl.textContent = `✅ 사진 ${selectedStorageImages.length}장 준비 완료! [Analyze Unit & Calculate MAX BID]를 누르세요.`;
+      } catch (err) {
+        statusEl.textContent = "❌ 사진 처리 오류: " + (err.message || err);
+      }
+    }
+
+    async function runStorageAnalysis() {
+      const statusEl = document.getElementById("storageStatusBox");
+      const card = document.getElementById("storageResultCard");
+      if (selectedStorageImages.length < 1) {
+        statusEl.textContent = "❌ 스토리지 사진을 최소 1장 이상 선택해 주세요.";
+        return;
+      }
+
+      const bidVal = Number(document.getElementById("storageBidInput").value || 0);
+      const btn = document.getElementById("runStorageBtn");
+      btn.disabled = true;
+      card.style.display = "none";
+      card.innerHTML = "";
+      statusEl.textContent = "⏳ 스토리지 유닛 자산 식별 · 품목별 eBay 시세 연동 · 시트 자동 기록 중...";
+
+      try {
+        const res = await postToGas_({
+          action: "analyzeStorageUnit",
+          images: selectedStorageImages,
+          currentBid: isFinite(bidVal) && bidVal > 0 ? bidVal : 0
+        });
+
+        if (!res || !res.success || !res.data) {
+          throw new Error(res && res.error ? res.error : "스토리지 분석 응답이 올바르지 않습니다.");
+        }
+
+        statusEl.textContent = "✅ 스토리지 분석 완료 (Storage_Auction_Analysis 시트 자동 저장됨)";
+        renderStorageResult_(res.data);
+      } catch (err) {
+        const msg = err && err.message ? err.message : String(err);
+        statusEl.textContent = "❌ 스토리지 분석 실패: " + msg;
+        card.style.display = "block";
+        card.innerHTML = `<div class="alert-box">스토리지 분석 오류\n${escapeHtml_(msg)}</div>`;
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
+    function renderStorageResult_(d) {
+      const card = document.getElementById("storageResultCard");
+      card.style.display = "block";
+
+      const decision = String(d.decision || "ENTER BID").toUpperCase();
+      let bannerCls = "maybe";
+      let pillBg = "var(--status-maybe)";
+      if (decision === "BID NOW") { bannerCls = "buy"; pillBg = "var(--status-buy)"; }
+      else if (decision === "PASS") { bannerCls = "pass"; pillBg = "var(--status-pass)"; }
+
+      card.innerHTML = `
+        <div class="max-buy-banner ${bannerCls}">
+          <div>
+            <div class="banner-kicker">SAFE MAXIMUM BID</div>
+            <div class="banner-price tabular">$${Number(d.calculated_max_safe_bid || 0).toFixed(0)}</div>
+            <div class="meta-line" style="color:#fff; opacity:0.85;">Grade ${escapeHtml_(d.grade || "B")} · Sheet Auto-Saved</div>
+          </div>
+          <div class="banner-decision-pill" style="background:${pillBg};">
+            <div>${escapeHtml_(decision)}</div>
+          </div>
+        </div>
+
+        <div class="eval-section-title"><span>UNIT FINANCIAL SUMMARY</span></div>
+        <div class="kv-row"><span class="kv-label">예상 총 매출 (Gross Value)</span><span class="kv-val tabular" style="color:var(--accent-gold-bright);">$${Number(d.ai_est_total_value || 0).toFixed(0)}</span></div>
+        <div class="kv-row"><span class="kv-label">현재 입찰가 (Current Bid)</span><span class="kv-val tabular">$${Number(d.current_bid || 0).toFixed(0)}</span></div>
+        <div class="kv-row"><span class="kv-label">예상 폐기비 (Disposal)</span><span class="kv-val tabular">$${Number(d.ai_est_disposal_cost || 0).toFixed(0)}</span></div>
+
+        <div class="eval-section-title"><span>IDENTIFIED KEY ASSETS</span></div>
+        <div class="listing-box">${escapeHtml_(d.key_assets || "식별된 품목 없음")}</div>
+
+        <div class="eval-section-title"><span>RISK & STRATEGY MEMO</span></div>
+        <div class="meta-line" style="color:var(--status-maybe);">⚠️ 폐기물/리스크: ${escapeHtml_(d.risks_trash || "-")}</div>
+        <div class="meta-line" style="color:var(--text-primary); margin-top:6px;">💡 전략 메모: ${escapeHtml_(d.strategy_memo || "-")}</div>
+      `;
     }
   </script>
 </body>
